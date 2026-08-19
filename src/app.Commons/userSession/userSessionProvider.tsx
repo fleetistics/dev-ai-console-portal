@@ -61,7 +61,10 @@ export function UserSessionProvider(props: { children: React.ReactNode }) {
         else return (<InitError title="Session check failed" errorMsg={(error as FetchError)?.message} retryFunc={refetch} />);
     }
     else if (data === undefined) return (<InitError errorMsg={"Session check failed: no data returned"} retryFunc={refetch} />);
-    else return (<UserSession_ValidSession userId={data.userId} sessionId={data.sessionId}>
-        {props.children}
-    </UserSession_ValidSession>);
+    else {
+        AuthToken.set(data.accessToken);
+        return (<UserSession_ValidSession userId={data.userId} sessionId={data.sessionId}>
+            {props.children}
+        </UserSession_ValidSession>);
+    }
 }
