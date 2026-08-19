@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(yarn -v)",
+      "Bash(corepack -v)",
+      "Bash(yarn install *)",
+      "Bash(yarn build *)"
+    ]
+  }
+}
