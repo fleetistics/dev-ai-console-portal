@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ActionIcon, Alert, CloseButton, Container, Group, TextInput, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Alert, Avatar, CloseButton, Container, Group, TextInput, Title, Tooltip } from '@mantine/core';
 import { IconPencil, IconSearch, IconUserPlus } from '@tabler/icons-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import {
@@ -38,6 +38,25 @@ export function UsersPage() {
             </ActionIcon>
           </Tooltip>
         ),
+      },
+      {
+        id: 'avatar',
+        header: '',
+        columnDefType: 'display',
+        grow: false,
+        size: 40,
+        Cell: ({ row }) => {
+          const avatarImage = row.original.AvatarImage;
+          return (
+            <Avatar
+              src={avatarImage?.PreviewUrl ?? avatarImage?.Url}
+              name={row.original.DisplayName}
+              color="initials"
+              size={25}
+              radius="xl"
+            />
+          );
+        },
       },
       { accessorKey: 'DisplayName', header: 'Display Name' },
       { accessorKey: 'FullName', header: 'Full Name' },
