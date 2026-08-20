@@ -1,4 +1,5 @@
-import { Alert, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { useRef, useState } from 'react';
+import { Alert, Avatar, Button, Center, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useCreateUser, useUpdateUser } from '@/app.DataLayer/user/userApi';
@@ -29,6 +30,22 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   const [createUser, createUserState] = useCreateUser();
   const { isLoading, error } = isCreating ? createUserState : updateUserState;
 
+  // Local-only for now: there's no upload endpoint yet (avatar upload was postponed), so
+  // "Upload" just previews the chosen file and "Clear" drops that preview. Persisting it
+  // is future work once the backend media/upload story is designed.
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    user?.AvatarImage?.PreviewUrl ?? user?.AvatarImage?.Url ?? null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatarUrl(URL.createObjectURL(file));
+    }
+    event.target.value = '';
+  };
+
   const form = useForm<UserFormValues>({
     // Spread the row: it comes straight from the RTK Query cache, which Immer freezes in
     // development, and @mantine/form mutates its values internally.
@@ -55,32 +72,69 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   });
 
   return (
-    <Modal opened={opened} onClose={onClose} title={isCreating ? 'Add user' : 'Edit user'}>
+    <Modal opened={opened} onClose={onClose} title={isCreating ? 'Add user' : 'Edit user'} size="lg">
       <form onSubmit={handleSubmit}>
-        <Stack>
-          {isCreating && (
-            <TextInput label={requiredLabel('Username')} {...form.getInputProps('UserName')} />
-          )}
-          <TextInput label={requiredLabel('Display Name')} {...form.getInputProps('DisplayName')} />
-          <TextInput label="Full Name" {...form.getInputProps('FullName')} />
-          <TextInput label="Phone" {...form.getInputProps('Phone')} />
-          <TextInput label={requiredLabel('Email')} {...form.getInputProps('Email')} />
-
-          {error && (
-            <Alert color="red" title="Failed to save user">
-              {JSON.stringify(error)}
-            </Alert>
-          )}
-
-          <Group justify="flex-end">
-            <Button variant="default" onClick={onClose}>
-              Cancel
+        <Group align="flex-start" wrap="nowrap">
+          <Stack align="center" gap="xs">
+            {avatarUrl ? (
+              <Avatar src={avatarUrl} size={192} radius="md" />
+            ) : (
+              <Center
+                w={192}
+                h={192}
+                bg="gray.0"
+                style={{ border: '1px dashed var(--mantine-color-gray-4)', borderRadius: 8 }}
+              >
+                <Text size="xs" c="dimmed" ta="center" px={4}>
+                  No Image Uploaded
+                </Text>
+              </Center>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleFileSelected}
+            />
+            <Button size="xs" variant="default" onClick={() => fileInputRef.current?.click()}>
+              Upload
             </Button>
-            <Button type="submit" loading={isLoading}>
-              Save
-            </Button>
-          </Group>
-        </Stack>
+            {avatarUrl && (
+              <Button size="xs" variant="subtle" color="red" onClick={() => setAvatarUrl(null)}>
+                Clear
+              </Button>
+            )}
+          </Stack>
+
+          <Stack style={{ flex: 1 }}>
+            {isCreating && (
+              <TextInput label={requiredLabel('Username')} {...form.getInputProps('UserName')} />
+            )}
+            <TextInput
+              label={requiredLabel('Display Name')}
+              {...form.getInputProps('DisplayName')}
+            />
+            <TextInput label="Full Name" {...form.getInputProps('FullName')} />
+            <TextInput label="Phone" {...form.getInputProps('Phone')} />
+            <TextInput label={requiredLabel('Email')} {...form.getInputProps('Email')} />
+
+            {error && (
+              <Alert color="red" title="Failed to save user">
+                {JSON.stringify(error)}
+              </Alert>
+            )}
+
+            <Group justify="flex-end">
+              <Button variant="default" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={isLoading}>
+                Save
+              </Button>
+            </Group>
+          </Stack>
+        </Group>
       </form>
     </Modal>
   );
