@@ -5,3 +5,11 @@ export type User = {
     Phone: string,
     Email: string
 };
+
+export type NewUser = {
+    UserName: string,
+    DisplayName: string,
+    FullName: string,
+    Phone: string,
+    Email: string
+};

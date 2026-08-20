@@ -745,6 +745,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/dates@npm:^9.5.1":
+  version: 9.5.1
+  resolution: "@mantine/dates@npm:9.5.1"
+  dependencies:
+    clsx: "npm:^2.1.1"
+  peerDependencies:
+    "@mantine/core": 9.5.1
+    "@mantine/hooks": 9.5.1
+    dayjs: ">=1.0.0"
+    react: ^19.2.0
+    react-dom: ^19.2.0
+  checksum: 10c0/f6806578b22667a727460b1e98957201a4c8d9efc7833dd724ba8518a003091217a73c1f790a727c8fe2d719727fb2f92359aa27345b2789f2ff6713a8e4fc86
+  languageName: node
+  linkType: hard
+
+"@mantine/form@npm:^9.5.1":
+  version: 9.5.1
+  resolution: "@mantine/form@npm:9.5.1"
+  dependencies:
+    "@standard-schema/spec": "npm:^1.1.0"
+    fast-deep-equal: "npm:^3.1.3"
+    klona: "npm:^2.0.6"
+  peerDependencies:
+    react: ^19.2.0
+  checksum: 10c0/89aa3c4f519f06bc4e0e118bb3e16495e7ce93395385326ae70e8cd9a1d2ec71cf91dbe8e5913c8f63a339a2970513f65d3ed910a5e4b19c6b63048bc7d268f0
+  languageName: node
+  linkType: hard
+
 "@mantine/hooks@npm:9.5.1":
   version: 9.5.1
   resolution: "@mantine/hooks@npm:9.5.1"
@@ -1652,6 +1680,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tabler/icons-react@npm:^3.46.0":
+  version: 3.46.0
+  resolution: "@tabler/icons-react@npm:3.46.0"
+  dependencies:
+    "@tabler/icons": "npm:3.46.0"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 10c0/8fab7d3a9ec6b62724a1628b8bad68a7b503979e4418f97d057c442adc5257b227a08185a884d452d171983648e36fa92cd7bfe9457f693e9b67bbf4ecf8ec24
+  languageName: node
+  linkType: hard
+
+"@tabler/icons@npm:3.46.0":
+  version: 3.46.0
+  resolution: "@tabler/icons@npm:3.46.0"
+  checksum: 10c0/c9671449c2f53fa7e329c487162f89a28417cdd5ce96cfa290fe21388724da303dd2297af3b39a88a74b02c36ce55598bc3cf6537dbddf548881da2c05f35f5e
+  languageName: node
+  linkType: hard
+
+"@tanstack/match-sorter-utils@npm:8.19.4":
+  version: 8.19.4
+  resolution: "@tanstack/match-sorter-utils@npm:8.19.4"
+  dependencies:
+    remove-accents: "npm:0.5.0"
+  checksum: 10c0/935022e3d639f19472131d289f3e1202253ff34301717c337e9bac0eeae6a0bd56450ed8ae2f7eb7ac9dfefa7ceaa7d126d8c5441021968b4a9eabc3ac4f8ba1
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:5.101.4":
   version: 5.101.4
   resolution: "@tanstack/query-core@npm:5.101.4"
@@ -1667,6 +1722,44 @@ __metadata:
   peerDependencies:
     react: ^18 || ^19
   checksum: 10c0/92e7c5b44740e753b05a6a19c166ea1a000df64c1bf5edb315d08a5b555a9f16a9d35288ac38f650bd38fc3015b135c392749fd6db24d09db42bfaf758d119fa
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-table@npm:8.20.5":
+  version: 8.20.5
+  resolution: "@tanstack/react-table@npm:8.20.5"
+  dependencies:
+    "@tanstack/table-core": "npm:8.20.5"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10c0/574fa62fc6868a3b1113dbd043323f8b73aeb60555609caa164d5137a14636d4502784a961191afde2ec46f33f8c2bbfc4561d27a701c3d084e899a632dda3c8
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:3.11.2":
+  version: 3.11.2
+  resolution: "@tanstack/react-virtual@npm:3.11.2"
+  dependencies:
+    "@tanstack/virtual-core": "npm:3.11.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/de446ce517d0855b3d58e79b6a75a37be40b4529baf0a5c3ffa2662dea80aba03409e06545aea27aa9e3a36fc2a2e3005ecbfce16a4659991d66930ea3bd62d4
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.20.5":
+  version: 8.20.5
+  resolution: "@tanstack/table-core@npm:8.20.5"
+  checksum: 10c0/3c27b5debd61b6bd9bfbb40bfc7c5d5af90873ae1a566b20e3bf2d2f4f2e9a78061c081aacc5259a00e256f8df506ec250eb5472f5c01ff04baf9918b554982b
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.11.2":
+  version: 3.11.2
+  resolution: "@tanstack/virtual-core@npm:3.11.2"
+  checksum: 10c0/38f1047127c6b1d07fe95becb7a12e66fb7c59d37ec0359e4ab339f837c6b906e1adff026ebd12849ba851d3f118d491014205c6b3c6ed8568cc232a798aeaaf
   languageName: node
   linkType: hard
 
@@ -2517,6 +2610,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.23":
+  version: 1.11.23
+  resolution: "dayjs@npm:1.11.23"
+  checksum: 10c0/69ab04bf19c676e44ab50cc2fca223d265f3dafd107151ef3b0f3ad74d360c37caa602abe62f87cb25d90bd9f6bee003698af47df5b0dbf10a998b7b5f3bb3f1
+  languageName: node
+  linkType: hard
+
 "debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
@@ -3358,10 +3458,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"klona@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "klona@npm:2.0.6"
+  checksum: 10c0/94eed2c6c2ce99f409df9186a96340558897b3e62a85afdc1ee39103954d2ebe1c1c4e9fe2b0952771771fa96d70055ede8b27962a7021406374fdb695fd4d01
+  languageName: node
+  linkType: hard
+
 "known-css-properties@npm:^0.37.0":
   version: 0.37.0
   resolution: "known-css-properties@npm:0.37.0"
   checksum: 10c0/e0ec08cae580e8833254b690971f73ec6f78ac461820a3c755b4a0b62c5b871501753b4aa60b30576a0f621ba44b231235cf9f35ab89e2e7de5448dfe0600241
+  languageName: node
+  linkType: hard
+
+"libphonenumber-js@npm:^1.13.11":
+  version: 1.13.11
+  resolution: "libphonenumber-js@npm:1.13.11"
+  checksum: 10c0/1de958a7b78d281aa357a1b89be173bb5e7034b302b3921174f190e88bec611e19c891cadbf935facda261254e250bc32de00560765e689fb68a39db286765ff
   languageName: node
   linkType: hard
 
@@ -3551,16 +3665,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mantine-react-table@npm:^2.0.0-beta.9":
+  version: 2.0.0-beta.9
+  resolution: "mantine-react-table@npm:2.0.0-beta.9"
+  dependencies:
+    "@tanstack/match-sorter-utils": "npm:8.19.4"
+    "@tanstack/react-table": "npm:8.20.5"
+    "@tanstack/react-virtual": "npm:3.11.2"
+  peerDependencies:
+    "@mantine/core": ^7.9
+    "@mantine/dates": ^7.9
+    "@mantine/hooks": ^7.9
+    "@tabler/icons-react": ">=2.23.0"
+    clsx: ">=2"
+    dayjs: ">=1.11"
+    react: ">=18.0"
+    react-dom: ">=18.0"
+  checksum: 10c0/8a560096d4a6ecc3f0eb16ea171c3d2589125f53152e0ed8ac1853977b6fa35994cf7b4f553b92b9b0333010805f8c0e42f002330408925cbc8050b03528df0b
+  languageName: node
+  linkType: hard
+
 "mantine-vite-template@workspace:.":
   version: 0.0.0-use.local
   resolution: "mantine-vite-template@workspace:."
   dependencies:
     "@mantine/core": "npm:9.5.1"
+    "@mantine/dates": "npm:^9.5.1"
+    "@mantine/form": "npm:^9.5.1"
     "@mantine/hooks": "npm:9.5.1"
     "@reduxjs/toolkit": "npm:^2.12.0"
     "@storybook/addon-themes": "npm:^10.0.0"
     "@storybook/react": "npm:^10.0.0"
     "@storybook/react-vite": "npm:^10.0.0"
+    "@tabler/icons-react": "npm:^3.46.0"
     "@tanstack/react-query": "npm:^5.101.4"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:^7.0.0"
@@ -3570,8 +3707,12 @@ __metadata:
     "@types/react": "npm:^19.2.2"
     "@types/react-dom": "npm:^19.2.1"
     "@vitejs/plugin-react": "npm:^6.0.0"
+    clsx: "npm:^2.1.1"
+    dayjs: "npm:^1.11.23"
     identity-obj-proxy: "npm:^3.0.0"
     jsdom: "npm:^30.0.0"
+    libphonenumber-js: "npm:^1.13.11"
+    mantine-react-table: "npm:^2.0.0-beta.9"
     ofetch: "npm:^1.5.1"
     oxc-config-mantine: "npm:^1.0.0"
     oxfmt: "npm:^0.62.0"
@@ -4516,6 +4657,13 @@ __metadata:
   version: 5.0.1
   resolution: "redux@npm:5.0.1"
   checksum: 10c0/b10c28357194f38e7d53b760ed5e64faa317cc63de1fb95bc5d9e127fab956392344368c357b8e7a9bedb0c35b111e7efa522210cfdc3b3c75e5074718e9069c
+  languageName: node
+  linkType: hard
+
+"remove-accents@npm:0.5.0":
+  version: 0.5.0
+  resolution: "remove-accents@npm:0.5.0"
+  checksum: 10c0/a75321aa1b53d9abe82637115a492770bfe42bb38ed258be748bf6795871202bc8b4badff22013494a7029f5a241057ad8d3f72adf67884dbe15a9e37e87adc4
   languageName: node
   linkType: hard
 

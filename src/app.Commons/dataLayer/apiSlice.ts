@@ -5,6 +5,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
   FetchBaseQueryMeta,
+  retry,
 } from '@reduxjs/toolkit/query/react';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
 
@@ -144,9 +145,20 @@ export const baseQueryWithReauth: BaseQueryFn<
   return retried;
 };
 
+// Retries only transient failures (network errors, timeouts, 5xx) with exponential backoff.
+// Definitive errors (4xx, including a 401 that survives baseQueryWithReauth's own refresh
+// attempt) are never transient, so retrying them would just delay the same failure.
+const baseQueryWithRetry: typeof baseQueryWithReauth = retry(baseQueryWithReauth, {
+  retryCondition: (error, _args, { attempt }) => {
+    if (attempt > 3) return false;
+    const status = (error as FetchBaseQueryError).status;
+    return typeof status !== 'number' || status >= 500;
+  },
+});
+
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithReauth,
+  baseQuery: baseQueryWithRetry,
   // Every tag type must be declared here — injectEndpoints() cannot add new ones later.
   tagTypes: ['User'],
   endpoints: () => ({}),
