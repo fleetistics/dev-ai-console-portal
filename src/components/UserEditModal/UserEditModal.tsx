@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { Alert, Avatar, Button, Center, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { useUploadMedia } from '@/app.DataLayer/media/mediaApi';
+import { MediaType, type UploadedMedia } from '@/app.DataLayer/media/uploadedMedia';
 import { useCreateUser, useUpdateUser } from '@/app.DataLayer/user/userApi';
 import type { User } from '@/app.DataLayer/user/userDto';
 
@@ -30,20 +32,27 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   const [createUser, createUserState] = useCreateUser();
   const { isLoading, error } = isCreating ? createUserState : updateUserState;
 
-  // Local-only for now: there's no upload endpoint yet (avatar upload was postponed), so
-  // "Upload" just previews the chosen file and "Clear" drops that preview. Persisting it
-  // is future work once the backend media/upload story is designed.
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    user?.AvatarImage?.PreviewUrl ?? user?.AvatarImage?.Url ?? null
+  // Uploads immediately on file pick (rather than deferring to Save) so the preview shows
+  // the real stored image right away. UpdateUser/CreateUser don't yet accept an avatar
+  // reference in their body, so this is captured for a future save-wiring step, not
+  // persisted to the user record here.
+  const [avatarImage, setAvatarImage] = useState<UploadedMedia | null>(
+    user?.AvatarImage ?? null
   );
+  // Never updated after mount: the fixed baseline avatarImage is compared against to
+  // decide whether the avatar itself counts as a change, since it lives outside the form.
+  const [initialAvatarId] = useState(user?.AvatarImage?.Id ?? null);
+  const [uploadMedia, { isLoading: isUploading, error: uploadError }] = useUploadMedia();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarUrl = avatarImage?.PreviewUrl ?? avatarImage?.Url;
 
-  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setAvatarUrl(URL.createObjectURL(file));
-    }
     event.target.value = '';
+    if (!file) return;
+
+    const uploaded = await uploadMedia({ file, mediaType: MediaType.Image }).unwrap();
+    setAvatarImage(uploaded);
   };
 
   const form = useForm<UserFormValues>({
@@ -61,13 +70,20 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
     },
   });
 
+  const hasChanges = form.isDirty() || (avatarImage?.Id ?? null) !== initialAvatarId;
+
   const handleSubmit = form.onSubmit(async (values) => {
+    const valuesWithAvatar = {
+      ...values,
+      AvatarImageId: avatarImage?.Id,
+    };
+
     if (isCreating) {
-      await createUser(values).unwrap();
+      await createUser(valuesWithAvatar).unwrap();
       onClose();
       return;
     }
-    await updateUser(values).unwrap();
+    await updateUser(valuesWithAvatar).unwrap();
     onClose();
   });
 
@@ -97,13 +113,28 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
               hidden
               onChange={handleFileSelected}
             />
-            <Button size="xs" variant="default" onClick={() => fileInputRef.current?.click()}>
+            <Button
+              size="xs"
+              variant="default"
+              loading={isUploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
               Upload
             </Button>
             {avatarUrl && (
-              <Button size="xs" variant="subtle" color="red" onClick={() => setAvatarUrl(null)}>
+              <Button
+                size="xs"
+                variant="subtle"
+                color="red"
+                onClick={() => setAvatarImage(null)}
+              >
                 Clear
               </Button>
+            )}
+            {uploadError && (
+              <Text size="xs" c="red" ta="center">
+                Upload failed
+              </Text>
             )}
           </Stack>
 
@@ -129,7 +160,7 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
               <Button variant="default" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit" loading={isLoading}>
+              <Button type="submit" loading={isLoading} disabled={!hasChanges}>
                 Save
               </Button>
             </Group>

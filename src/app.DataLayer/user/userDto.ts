@@ -6,6 +6,7 @@ export type User = {
     FullName: string,
     Phone: string,
     Email: string,
+    AvatarImageId?: number,
     AvatarImage?: UploadedMedia
 };
 
