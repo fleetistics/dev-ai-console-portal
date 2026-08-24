@@ -1,19 +1,19 @@
-import { UploadedMedia } from "../media/uploadedMedia";
+import { UploadedMedia } from '../media/uploadedMedia';
 
 export type User = {
-    Id: number,
-    DisplayName: string,
-    FullName: string,
-    Phone: string,
-    Email: string,
-    AvatarImageId?: number,
-    AvatarImage?: UploadedMedia
+  Id: number;
+  DisplayName: string;
+  FullName: string;
+  Phone: string;
+  Email: string;
+  AvatarImageId?: number;
+  AvatarImage?: UploadedMedia;
 };
 
 export type NewUser = {
-    UserName: string,
-    DisplayName: string,
-    FullName: string,
-    Phone: string,
-    Email: string
+  UserName: string;
+  DisplayName: string;
+  FullName: string;
+  Phone: string;
+  Email: string;
 };

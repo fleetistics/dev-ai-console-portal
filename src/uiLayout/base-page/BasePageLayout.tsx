@@ -1,6 +1,7 @@
+import { Outlet } from 'react-router';
 import { AppShell, Burger, Group, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Outlet } from 'react-router';
+import { ReportProblemButton } from '@/app.Commons/flightRecorder/ReportProblemButton';
 
 export function BasePageLayout() {
   const [navOpened, { toggle: toggleNav }] = useDisclosure();
@@ -12,11 +13,14 @@ export function BasePageLayout() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={navOpened} onClick={toggleNav} hiddenFrom="sm" size="sm" />
-          <Text fw={700} c="blue">
-            Fleetistics
-          </Text>
+        <Group h="100%" px="md" justify="space-between">
+          <Group>
+            <Burger opened={navOpened} onClick={toggleNav} hiddenFrom="sm" size="sm" />
+            <Text fw={700} c="blue">
+              Fleetistics
+            </Text>
+          </Group>
+          <ReportProblemButton />
         </Group>
       </AppShell.Header>
 
