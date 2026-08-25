@@ -59,9 +59,16 @@ export async function installApiMock(
   return { requests };
 }
 
-/** A Handler that always answers with the same JSON body and status. */
+/**
+ * A one-argument route responder. Returns type is inferred (not annotated as
+ * Handler) so its declared arity stays at one parameter — a Handler-typed
+ * value requires two — letting call sites invoke it directly as
+ * `jsonRoute(data)(route)`, not just pass it where a Handler is expected.
+ * Assignable to Handler either way: a function declaring fewer parameters
+ * than a target type always satisfies that target.
+ */
 export const jsonRoute =
-  (data: unknown, status = 200): Handler =>
-  async (route) => {
+  (data: unknown, status = 200) =>
+  async (route: Route) => {
     await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
   };
