@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { Alert, Avatar, Button, Center, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { getErrorMessage, getErrorTraceId } from '@/app.Commons/dataLayer/apiError';
 import { useUploadMedia } from '@/app.DataLayer/media/mediaApi';
 import { MediaType, type UploadedMedia } from '@/app.DataLayer/media/uploadedMedia';
 import { useCreateUser, useUpdateUser } from '@/app.DataLayer/user/userApi';
@@ -152,7 +153,12 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
 
             {error && (
               <Alert color="red" title="Failed to save user">
-                {JSON.stringify(error)}
+                {getErrorMessage(error)}
+                {getErrorTraceId(error) && (
+                  <Text size="xs" c="dimmed" mt={4}>
+                    Support code: {getErrorTraceId(error)}
+                  </Text>
+                )}
               </Alert>
             )}
 

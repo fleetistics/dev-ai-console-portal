@@ -1,10 +1,13 @@
-import { Outlet } from 'react-router';
-import { AppShell, Burger, Group, Text } from '@mantine/core';
+import { Outlet, useNavigation } from 'react-router';
+import { AppShell, Burger, Group, Progress, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { ReportProblemButton } from '@/app.Impl/flightRecorder/ReportProblemButton';
 
 export function BasePageLayout() {
   const [navOpened, { toggle: toggleNav }] = useDisclosure();
+  // Lazy routes (see Router.tsx) fetch their chunk before rendering, so this
+  // covers both that fetch and any route loader — a blank click otherwise.
+  const isNavigating = useNavigation().state !== 'idle';
 
   return (
     <AppShell
@@ -22,6 +25,13 @@ export function BasePageLayout() {
           </Group>
           <ReportProblemButton />
         </Group>
+        <Progress
+          value={100}
+          size={2}
+          radius={0}
+          animated
+          style={{ opacity: isNavigating ? 1 : 0, transition: 'opacity 150ms' }}
+        />
       </AppShell.Header>
 
       <AppShell.Navbar p="md" />

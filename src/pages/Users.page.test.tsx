@@ -23,6 +23,7 @@ import { UsersPage } from './Users.page';
 
 const alice: User = {
   Id: 1,
+  UserName: 'alice',
   DisplayName: 'Alice',
   FullName: 'Alice Anderson',
   Phone: '8135550100',
@@ -31,6 +32,7 @@ const alice: User = {
 
 const bob: User = {
   Id: 2,
+  UserName: 'bob',
   DisplayName: 'Bob',
   FullName: 'Bob Brown',
   Phone: '8135550199',
