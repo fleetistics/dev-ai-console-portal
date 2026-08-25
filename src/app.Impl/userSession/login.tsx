@@ -13,6 +13,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useLoginMutation } from '@/app.Commons/userSession/userSessionApi';
+import { AppConfig } from '@/app.Impl/configs/AppConfig';
 
 export function LoginPage(props: { reloadSessionFunc?: () => void }) {
   const [username, setUsername] = useState('');
@@ -44,7 +45,7 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
         <Stack gap="md">
           <div>
             <Text fw={700} size="lg" c="blue">
-              Fleetistics
+              {AppConfig.APP_NAME || 'Console'}
             </Text>
             <Text size="sm" c="dimmed">
               Development Console
