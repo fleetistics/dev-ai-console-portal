@@ -1,12 +1,9 @@
 import { SubmitEvent, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { FetchError, ofetch } from 'ofetch';
 import {
   Alert,
   Anchor,
   Button,
   Checkbox,
-  Divider,
   Group,
   Paper,
   PasswordInput,
@@ -15,36 +12,28 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { USER_SESSION_LOGIN_URI } from '@/app.Commons/userSession/userSessionConst';
-import { LoginData } from '@/app.Commons/userSession/userSessionDto';
-import { AppConfig } from '@/app.Impl/configs/AppConfig';
-
-const api = ofetch.create({
-  baseURL: AppConfig.BASE_URL,
-  credentials: 'include',
-});
+import { useLoginMutation } from '@/app.Commons/userSession/userSessionApi';
 
 export function LoginPage(props: { reloadSessionFunc?: () => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const loginMutation = useMutation({
-    mutationFn: () =>
-      api(USER_SESSION_LOGIN_URI, {
-        method: 'POST',
-        body: { UserName: username, Password: password, RememberMe: rememberMe } as LoginData,
-      }),
-    onSuccess: () => props.reloadSessionFunc?.(),
-  });
+  const [login, loginState] = useLoginMutation();
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    loginMutation.mutate();
+    try {
+      await login({ UserName: username, Password: password, RememberMe: rememberMe }).unwrap();
+      // Re-runs the session check, which stores the token and swaps in the app UI.
+      props.reloadSessionFunc?.();
+    } catch {
+      // Rendered below from loginState.error.
+    }
   };
 
-  const loginError = loginMutation.isError
-    ? (loginMutation.error as FetchError).status === 401
+  const loginError = loginState.isError
+    ? (loginState.error as { status?: unknown }).status === 401
       ? 'Invalid username or password'
       : 'Sign in failed — please try again'
     : undefined;
@@ -97,7 +86,7 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
             </Alert>
           )}
 
-          <Button type="submit" fullWidth loading={loginMutation.isPending}>
+          <Button type="submit" fullWidth loading={loginState.isLoading}>
             Sign in
           </Button>
         </Stack>

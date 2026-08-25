@@ -78,17 +78,24 @@ describe('UsersPage', () => {
     renderApp(<UsersPage />);
     await screen.findByText('Alice');
 
-    // Row-level queries instead of getByText: the table highlights the matched
-    // substring by wrapping it in <mark>, which splits cell text into several nodes.
-    // A row's accessible name is its concatenated cell text, so it stays stable.
+    // Match on raw row textContent rather than getByRole's `name` (accessible-name)
+    // filter: the table highlights the matched substring by wrapping it in <mark>,
+    // which splits cell text into several nodes, and the ARIA accessible-name
+    // algorithm normalizes that differently than plain textContent does — a plain
+    // substring check on textContent is what stays stable across both.
+    const rowNamed = (text: RegExp) =>
+      screen.getAllByRole('row').filter((row) => text.test(row.textContent ?? ''));
+
     await user.type(screen.getByPlaceholderText('Filter users...'), 'alice');
     await waitFor(() => {
-      expect(screen.queryByRole('row', { name: /bob brown/i })).not.toBeInTheDocument();
+      expect(rowNamed(/bob brown/i)).toHaveLength(0);
     });
-    expect(screen.getByRole('row', { name: /alice anderson/i })).toBeInTheDocument();
+    expect(rowNamed(/alice anderson/i)).toHaveLength(1);
 
     await user.click(screen.getByRole('button', { name: 'Clear filter' }));
-    expect(await screen.findByRole('row', { name: /bob brown/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(rowNamed(/bob brown/i)).toHaveLength(1);
+    });
   });
 
   it('opens the edit modal prefilled, with Save disabled until something changes', async () => {

@@ -47,7 +47,9 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   const handleFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const uploaded = await uploadMedia({ file, mediaType: MediaType.Image }).unwrap();
     setAvatarImage(uploaded);

@@ -11,6 +11,13 @@ import { AppConfig } from '@/app.Impl/configs/AppConfig';
 import { newTraceContext, recordTrace } from './traceContext';
 
 export const AUTH_REFRESH_URI = '/api/auth/Refresh';
+export const AUTH_CHECK_SESSION_URI = '/api/auth/CheckSession';
+export const AUTH_LOGIN_URI = '/api/auth/login';
+
+// Session-establishing endpoints: a 401 from these is a normal answer ("not signed
+// in" / "wrong credentials"), not an expired access token — so no refresh attempt
+// and no auth-lost notification for them.
+const SESSION_ESTABLISHING_URIS: string[] = [AUTH_CHECK_SESSION_URI, AUTH_LOGIN_URI];
 
 /**
  * In-memory holder for the .NET bearer token.
@@ -51,12 +58,8 @@ let rawBaseQuery:
   | BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>
   | undefined;
 
-/**
- * Built on first request rather than at module scope: AppConfig.BASE_URL is only
- * populated once AppConfig.init() resolves in main.tsx, which happens *after* this
- * module is evaluated. Reading it eagerly would bake in the empty fallback and every
- * request would go to a relative URL.
- */
+// Built lazily so tests can stub the environment before the first request reads
+// AppConfig.BASE_URL.
 const getRawBaseQuery = () => {
   rawBaseQuery ??= fetchBaseQuery({
     baseUrl: AppConfig.BASE_URL,
@@ -134,6 +137,10 @@ export const baseQueryWithReauth: BaseQueryFn<
   // Refreshing again would recurse; there is nothing left to recover from.
   if (urlOf(args) === AUTH_REFRESH_URI) {
     notifyAuthLost();
+    return result;
+  }
+
+  if (SESSION_ESTABLISHING_URIS.includes(urlOf(args))) {
     return result;
   }
 

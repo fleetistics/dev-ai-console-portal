@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "npm run oxlint && npm run stylelint",
     "oxlint": "oxlint -c oxlint.config.mjs .",
-    "stylelint": "stylelint '**/*.css' --cache",
+    "stylelint": "stylelint \"**/*.css\" --cache",
     "format:test": "oxfmt -c oxfmt.config.mjs --check \"**/*.{ts,tsx}\"",
     "format:write": "oxfmt -c oxfmt.config.mjs --write \"**/*.{ts,tsx}\"",
     "vitest": "vitest run",
@@ -27,12 +27,10 @@
     "@mantine/hooks": "9.5.1",
     "@reduxjs/toolkit": "^2.12.0",
     "@tabler/icons-react": "^3.46.0",
-    "@tanstack/react-query": "^5.101.4",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.23",
     "libphonenumber-js": "^1.13.11",
     "mantine-react-table": "^2.0.0-beta.9",
-    "ofetch": "^1.5.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-redux": "^9.3.0",
@@ -51,7 +49,7 @@
     "@types/react-dom": "^19.2.1",
     "@vitejs/plugin-react": "^6.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.0",
     "oxc-config-mantine": "^1.0.0",
     "oxfmt": "^0.62.0",
     "oxlint": "^1.70.0",
@@ -66,5 +64,8 @@
     "vite": "^8.0.0",
     "vitest": "^4.1.0"
   },
-  "packageManager": "yarn@4.18.0"
+  "packageManager": "yarn@4.18.0",
+  "engines": {
+    "node": ">=22"
+  }
 }

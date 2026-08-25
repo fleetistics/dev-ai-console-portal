@@ -1,43 +1,24 @@
-type AppConfigOverrides = Partial<{
-  APP_UID: string;
-  APP_VERSION: string;
-  APP_NAME: string;
-  BASE_URL: string;
-  LOG_UPLOAD_URL: string;
-}>;
-
+/**
+ * Build-time application configuration, read from VITE_* environment variables
+ * (.env files or the build environment). Values are baked into the bundle at
+ * build time — a per-deployment change means a rebuild.
+ */
 export class AppConfig {
-  private static overrides: AppConfigOverrides = {};
-
-  // Fetches public/config.json (served as-is, not bundled by Vite) so ops
-  // can override build-time VITE_* values per-deployment without a rebuild.
-  // Missing file/keys silently fall back to the compiled-in defaults.
-  public static async init(configUrl = '/config.json'): Promise<void> {
-    try {
-      const response = await fetch(configUrl);
-      if (response.ok) {
-        AppConfig.overrides = await response.json();
-      }
-    } catch {
-      AppConfig.overrides = {};
-    }
-  }
-
   public static get APP_UID() {
-    return AppConfig.overrides.APP_UID ?? import.meta.env.VITE_UID ?? '';
+    return import.meta.env.VITE_UID ?? '';
   }
   public static get APP_VERSION() {
-    return AppConfig.overrides.APP_VERSION ?? import.meta.env.VITE_VERSION ?? '';
+    return import.meta.env.VITE_VERSION ?? '';
   }
   public static get APP_NAME() {
-    return AppConfig.overrides.APP_NAME ?? import.meta.env.VITE_NAME ?? '';
+    return import.meta.env.VITE_NAME ?? '';
   }
   public static get BASE_URL() {
-    return AppConfig.overrides.BASE_URL ?? import.meta.env.VITE_BASE_URL ?? '';
+    return import.meta.env.VITE_BASE_URL ?? '';
   }
   // Endpoint for client-side diagnostic log uploads (flight recorder).
   // Empty means the default `${BASE_URL}/api/client-log`.
   public static get LOG_UPLOAD_URL() {
-    return AppConfig.overrides.LOG_UPLOAD_URL ?? import.meta.env.VITE_LOG_UPLOAD_URL ?? '';
+    return import.meta.env.VITE_LOG_UPLOAD_URL ?? '';
   }
 }

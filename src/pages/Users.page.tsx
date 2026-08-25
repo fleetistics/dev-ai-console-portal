@@ -5,7 +5,6 @@ import {
   MantineReactTable,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
-  MRT_ToggleFullScreenButton,
   type MRT_ColumnDef,
   useMantineReactTable,
 } from 'mantine-react-table';
