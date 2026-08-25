@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { ActionIcon, Alert, Avatar, CloseButton, Container, Group, TextInput, Title, Tooltip } from '@mantine/core';
 import { IconPencil, IconSearch, IconUserPlus } from '@tabler/icons-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import {
@@ -10,9 +9,20 @@ import {
   type MRT_ColumnDef,
   useMantineReactTable,
 } from 'mantine-react-table';
-import { UserEditModal } from '@/components/UserEditModal/UserEditModal';
+import {
+  ActionIcon,
+  Alert,
+  Avatar,
+  CloseButton,
+  Container,
+  Group,
+  TextInput,
+  Title,
+  Tooltip,
+} from '@mantine/core';
 import { useGetUsers } from '@/app.DataLayer/user/userApi';
 import type { User } from '@/app.DataLayer/user/userDto';
+import { UserEditModal } from '@/components/UserEditModal/UserEditModal';
 
 export function UsersPage() {
   const { data: users, isLoading, isError, error } = useGetUsers();
@@ -101,10 +111,7 @@ export function UsersPage() {
           leftSection={<IconSearch size={16} />}
           rightSection={
             filterValue ? (
-              <CloseButton
-                aria-label="Clear filter"
-                onClick={() => table.setGlobalFilter('')}
-              />
+              <CloseButton aria-label="Clear filter" onClick={() => table.setGlobalFilter('')} />
             ) : null
           }
           w={250}

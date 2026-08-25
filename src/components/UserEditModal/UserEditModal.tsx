@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 import { Alert, Avatar, Button, Center, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useUploadMedia } from '@/app.DataLayer/media/mediaApi';
 import { MediaType, type UploadedMedia } from '@/app.DataLayer/media/uploadedMedia';
 import { useCreateUser, useUpdateUser } from '@/app.DataLayer/user/userApi';
@@ -36,9 +36,7 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   // the real stored image right away. UpdateUser/CreateUser don't yet accept an avatar
   // reference in their body, so this is captured for a future save-wiring step, not
   // persisted to the user record here.
-  const [avatarImage, setAvatarImage] = useState<UploadedMedia | null>(
-    user?.AvatarImage ?? null
-  );
+  const [avatarImage, setAvatarImage] = useState<UploadedMedia | null>(user?.AvatarImage ?? null);
   // Never updated after mount: the fixed baseline avatarImage is compared against to
   // decide whether the avatar itself counts as a change, since it lives outside the form.
   const [initialAvatarId] = useState(user?.AvatarImage?.Id ?? null);
@@ -88,7 +86,12 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
   });
 
   return (
-    <Modal opened={opened} onClose={onClose} title={isCreating ? 'Add user' : 'Edit user'} size="lg">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={isCreating ? 'Add user' : 'Edit user'}
+      size="lg"
+    >
       <form onSubmit={handleSubmit}>
         <Group align="flex-start" wrap="nowrap">
           <Stack align="center" gap="xs">
@@ -122,12 +125,7 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
               Upload
             </Button>
             {avatarUrl && (
-              <Button
-                size="xs"
-                variant="subtle"
-                color="red"
-                onClick={() => setAvatarImage(null)}
-              >
+              <Button size="xs" variant="subtle" color="red" onClick={() => setAvatarImage(null)}>
                 Clear
               </Button>
             )}
