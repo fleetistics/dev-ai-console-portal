@@ -21,7 +21,7 @@ const MAX_PAYLOAD_BYTES = 4 * 1024 * 1024; // pre-gzip; logs compress 10-20x
 const AUTO_UPLOAD_THROTTLE_MS = 5 * 60 * 1000;
 const THROTTLE_KEY = 'flightRecorder.lastAutoUpload';
 
-const uploadUrl = (): string => AppConfig.LOG_UPLOAD_URL || `${AppConfig.BASE_URL}/api/logs/client`;
+const uploadUrl = (): string => AppConfig.LOG_UPLOAD_URL || `${AppConfig.BASE_URL}/api/client-log`;
 
 const gzip = async (text: string): Promise<Blob | null> => {
   if (typeof CompressionStream === 'undefined') {

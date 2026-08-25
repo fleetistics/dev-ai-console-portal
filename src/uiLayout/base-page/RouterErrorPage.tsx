@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouteError } from 'react-router';
 import { Button, Center, Stack, Text, Title } from '@mantine/core';
-import { log, reportCrash } from '@/app.Commons/flightRecorder';
+import { log, reportCrash } from '@/app.Impl/flightRecorder';
 
 export function RouterErrorPage() {
   const error = useRouteError() as Error | undefined;

@@ -1,3 +1,4 @@
+import { setTraceRecorder } from '@/app.Commons/dataLayer/traceContext';
 import { attachGlobalErrorHandlers, nativeConsole, patchConsole } from './captureGlobals';
 import { createLogSink } from './logDb';
 import { FlightLogger } from './logger';
@@ -62,6 +63,12 @@ export function initFlightRecorder(): void {
 
   patchConsole(log);
   attachGlobalErrorHandlers(log, () => uploader.autoUpload('crash'));
+
+  // Every API request logs its endpoint + W3C traceId, so an uploaded log carries
+  // the exact ids to look up the matching server traces in the telemetry backend.
+  setTraceRecorder((endpoint, traceId) => {
+    log.debug('api', `request ${endpoint}`, { traceId });
+  });
 
   // Flush the in-memory batch when the tab goes away; pagehide is the reliable
   // signal (unload is deprecated and skipped by the back/forward cache).

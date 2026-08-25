@@ -6,6 +6,8 @@ export interface RecordedRequest {
   pathname: string;
   /** Parsed JSON body when the request had one (falls back to the raw text). */
   body: unknown;
+  /** W3C Trace Context header attached by the api layer, if any. */
+  traceparent: string | null;
 }
 
 type RouteReply = (request: Request, recorded: RecordedRequest) => Response | Promise<Response>;
@@ -52,7 +54,13 @@ export function installApiMock(routes: Record<string, RouteReply>): ApiMock {
       }
     }
 
-    const recorded: RecordedRequest = { method: request.method, url: request.url, pathname, body };
+    const recorded: RecordedRequest = {
+      method: request.method,
+      url: request.url,
+      pathname,
+      body,
+      traceparent: request.headers.get('traceparent'),
+    };
     requests.push(recorded);
 
     const handler = routes[`${request.method} ${pathname}`];

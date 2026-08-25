@@ -8,6 +8,7 @@ import {
   retry,
 } from '@reduxjs/toolkit/query/react';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
+import { newTraceContext, recordTrace } from './traceContext';
 
 export const AUTH_REFRESH_URI = '/api/auth/Refresh';
 
@@ -61,10 +62,15 @@ const getRawBaseQuery = () => {
     baseUrl: AppConfig.BASE_URL,
     credentials: 'include',
     timeout: 60000,
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers, { endpoint }) => {
       if (AuthToken.jwtToken) {
         headers.set('Authorization', `Bearer ${AuthToken.jwtToken}`);
       }
+      // W3C Trace Context: the server continues this trace, making the browser the
+      // trace root. The id is also logged to the flight recorder for correlation.
+      const { traceparent, traceId } = newTraceContext();
+      headers.set('traceparent', traceparent);
+      recordTrace(endpoint, traceId);
       return headers;
     },
   });
@@ -150,7 +156,9 @@ export const baseQueryWithReauth: BaseQueryFn<
 // attempt) are never transient, so retrying them would just delay the same failure.
 const baseQueryWithRetry: typeof baseQueryWithReauth = retry(baseQueryWithReauth, {
   retryCondition: (error, _args, { attempt }) => {
-    if (attempt > 3) return false;
+    if (attempt > 3) {
+      return false;
+    }
     const status = (error as FetchBaseQueryError).status;
     return typeof status !== 'number' || status >= 500;
   },

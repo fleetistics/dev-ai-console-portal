@@ -53,13 +53,16 @@ afterAll(() => {
 
 describe('UsersPage', () => {
   it('loads users from the API and renders them as rows', async () => {
-    installApiMock({ 'GET /api/users': () => jsonResponse([alice, bob]) });
+    const api = installApiMock({ 'GET /api/users': () => jsonResponse([alice, bob]) });
     renderApp(<UsersPage />);
 
     // findBy* waits out the loading state — no manual waits needed.
     expect(await screen.findByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob Brown')).toBeInTheDocument();
     expect(screen.getByText('bob@example.test')).toBeInTheDocument();
+
+    // Every request carries W3C trace context so the server continues the trace.
+    expect(api.requests[0].traceparent).toMatch(/^00-[0-9a-f]{32}-[0-9a-f]{16}-01$/);
   });
 
   it('formats phone numbers in US national format', async () => {

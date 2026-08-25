@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router';
 import { AppShell, Burger, Group, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { ReportProblemButton } from '@/app.Commons/flightRecorder/ReportProblemButton';
+import { ReportProblemButton } from '@/app.Impl/flightRecorder/ReportProblemButton';
 
 export function BasePageLayout() {
   const [navOpened, { toggle: toggleNav }] = useDisclosure();
