@@ -17,7 +17,8 @@
     "vitest:watch": "vitest",
     "test": "npm run typecheck && npm run format:test && npm run lint && npm run vitest && npm run build",
     "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build"
+    "storybook:build": "storybook build",
+    "generate:api": "yarn dlx -q -p typescript@^5.9.2 -p openapi-typescript@^7 openapi-typescript http://localhost:5199/openapi/v1.json -o src/app.DataLayer/apiSchema.d.ts"
   },
   "dependencies": {
     "@mantine/core": "9.5.1",
