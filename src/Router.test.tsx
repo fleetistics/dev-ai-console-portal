@@ -19,7 +19,7 @@ describe('Router', () => {
 
     renderApp(<RouterProvider router={router} />);
 
-    expect(await screen.findByText('this guide')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /welcome to/i })).toBeInTheDocument();
   });
 
   it('lazily loads and renders the Users route on navigation', async () => {

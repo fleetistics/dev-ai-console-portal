@@ -9,7 +9,7 @@ const PORT = 5180;
  * That split is deliberate: the API's own behavior (auth rotation, idempotency,
  * validation, ...) is already covered by dev-ai-console-api's 28 integration
  * tests against a real database; this suite's job is the browser experience —
- * real clicks/typing, real routing, real lazy-chunk loading, real Mantine
+ * real clicks/typing, real routing, real lazy-chunk loading, real browser
  * rendering — none of which jsdom (the Vitest suite) can exercise.
  */
 export default defineConfig({

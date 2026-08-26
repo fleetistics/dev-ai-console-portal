@@ -26,16 +26,3 @@ class ResizeObserver {
 }
 
 window.ResizeObserver = ResizeObserver;
-
-// jsdom doesn't implement the CSS Font Loading API; Mantine's autosize Textarea
-// listens on it to recompute height once webfonts finish loading.
-if (!document.fonts) {
-  Object.defineProperty(document, 'fonts', {
-    writable: true,
-    value: {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      ready: Promise.resolve(),
-    },
-  });
-}

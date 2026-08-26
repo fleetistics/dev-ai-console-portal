@@ -15,7 +15,7 @@ import { UsersPage } from './Users.page';
  *
  * The pattern:
  *  - installApiMock() decides what the "server" returns (no real network, no MSW dep),
- *  - renderApp() mounts the page with Mantine + a fresh Redux store per test,
+ *  - renderApp() mounts the page with a fresh Redux store per test,
  *  - interactions go through userEvent (real click/typing semantics, not fireEvent),
  *  - queries prefer accessible roles/names — the test fails if a control loses its
  *    accessible name, which is a UX regression worth catching.
@@ -121,16 +121,17 @@ describe('UsersPage', () => {
     expect(saveButton).toBeEnabled();
   });
 
-  it('saves an edited user and shows the updated value in the table', async () => {
-    // Stateful mock: the PUT mutates `current`, and RTK Query's tag invalidation
-    // makes the page refetch the list — the UI must end up showing the new name.
+  it('saves only the changed field via PATCH and shows the updated value in the table', async () => {
+    // Stateful mock: the PATCH merges into `current` — the body only contains
+    // whatever RHF marked dirty — and RTK Query's tag invalidation makes the
+    // page refetch the list, so the UI must end up showing the new name.
     let current = [alice, bob];
     const api = installApiMock({
       'GET /api/users': () => jsonResponse(current),
-      'PUT /api/users/1': (_request, recorded) => {
-        const updated = recorded.body as User;
-        current = current.map((u) => (u.Id === updated.Id ? updated : u));
-        return jsonResponse(updated);
+      'PATCH /api/users/1': (_request, recorded) => {
+        const patch = recorded.body as Partial<User>;
+        current = current.map((u) => (u.Id === 1 ? { ...u, ...patch } : u));
+        return jsonResponse(current.find((u) => u.Id === 1));
       },
     });
     const user = userEvent.setup();
@@ -149,9 +150,11 @@ describe('UsersPage', () => {
     });
     expect(await screen.findByText('Alicia')).toBeInTheDocument();
 
-    const put = api.requests.find((r) => r.method === 'PUT');
-    expect(put?.pathname).toBe('/api/users/1');
-    expect((put?.body as User).DisplayName).toBe('Alicia');
+    // The whole point of the PATCH rewrite: only the field that actually
+    // changed goes over the wire, not the full user object.
+    const patch = api.requests.find((r) => r.method === 'PATCH');
+    expect(patch?.pathname).toBe('/api/users/1');
+    expect(patch?.body).toEqual({ DisplayName: 'Alicia' });
   });
 
   it('validates the add-user form and does not submit invalid input', async () => {

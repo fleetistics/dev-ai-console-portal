@@ -83,7 +83,43 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserPatchDto"];
+                    "text/json": components["schemas"]["UserPatchDto"];
+                    "application/*+json": components["schemas"]["UserPatchDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/users": {
@@ -264,7 +300,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -297,7 +335,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -336,7 +376,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -369,7 +411,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -400,7 +444,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -433,7 +479,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -489,6 +537,14 @@ export interface components {
             /** Format: int32 */
             AvatarImageId?: null | number;
             AvatarImage?: null | components["schemas"]["UploadedMediaDto"];
+        };
+        UserPatchDto: {
+            DisplayName?: string;
+            FullName?: null | string;
+            Phone?: null | string;
+            Email?: null | string;
+            /** Format: int32 */
+            AvatarImageId?: null | number;
         };
     };
     responses: never;

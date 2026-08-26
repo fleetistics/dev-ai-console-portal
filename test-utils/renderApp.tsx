@@ -1,8 +1,7 @@
 import { render as testingLibraryRender } from '@testing-library/react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { MantineProvider } from '@mantine/core';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { makeStore } from '../src/app.Commons/dataLayer/store';
-import { theme } from '../src/theme';
 
 /**
  * Renders connected UI (pages, anything using RTK Query hooks) with the full provider
@@ -17,9 +16,9 @@ export function renderApp(ui: React.ReactNode) {
     store,
     ...testingLibraryRender(ui, {
       wrapper: ({ children }: { children: React.ReactNode }) => (
-        <MantineProvider theme={theme} env="test">
+        <TooltipProvider>
           <ReduxProvider store={store}>{children}</ReduxProvider>
-        </MantineProvider>
+        </TooltipProvider>
       ),
     }),
   };

@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { IconLifebuoy } from '@tabler/icons-react';
-import { ActionIcon, Button, Group, Modal, Text, Textarea, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { reportProblem } from './index';
 
 type SendState = 'idle' | 'sending' | 'sent' | 'failed';
@@ -12,14 +21,16 @@ type SendState = 'idle' | 'sending' | 'sent' | 'failed';
  * nothing is sent until the user presses the button.
  */
 export function ReportProblemButton() {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, setOpened] = useState(false);
   const [comment, setComment] = useState('');
   const [state, setState] = useState<SendState>('idle');
 
-  const handleOpen = () => {
-    setState('idle');
-    setComment('');
-    open();
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      setState('idle');
+      setComment('');
+    }
+    setOpened(next);
   };
 
   const handleSend = async () => {
@@ -29,54 +40,69 @@ export function ReportProblemButton() {
   };
 
   return (
-    <>
-      <Tooltip label="Report a problem">
-        <ActionIcon variant="subtle" size="lg" aria-label="Report a problem" onClick={handleOpen}>
-          <IconLifebuoy size={20} />
-        </ActionIcon>
+    <Dialog open={opened} onOpenChange={handleOpenChange}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Report a problem">
+              <IconLifebuoy size={20} />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Report a problem</TooltipContent>
       </Tooltip>
 
-      <Modal opened={opened} onClose={close} title="Report a problem" centered>
+      {/* showCloseButton=false: the footer's own Cancel/Close buttons already cover
+          dismissal in both states — Radix's default corner X would be a second,
+          redundant "Close" control (and its accessible name collides exactly with
+          the footer Close button in the "sent" state). */}
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Report a problem</DialogTitle>
+        </DialogHeader>
+
         {state === 'sent' ? (
           <>
-            <Text size="sm" mb="md">
+            <p className="text-sm">
               Thank you! The report and diagnostic log were sent to our team.
-            </Text>
-            <Group justify="flex-end">
-              <Button onClick={close}>Close</Button>
-            </Group>
+            </p>
+            <DialogFooter>
+              <Button onClick={() => handleOpenChange(false)}>Close</Button>
+            </DialogFooter>
           </>
         ) : (
           <>
-            <Text size="sm" c="dimmed" mb="sm">
+            <p className="text-sm text-muted-foreground">
               Describe what went wrong. Diagnostic data from this browser (application logs for up
               to the last 7 days) will be attached to help us investigate.
-            </Text>
+            </p>
             <Textarea
               value={comment}
               onChange={(event) => setComment(event.currentTarget.value)}
               placeholder="What were you doing when the problem occurred?"
-              minRows={4}
-              autosize
-              mb="md"
-              data-autofocus
+              rows={4}
+              autoFocus
             />
             {state === 'failed' && (
-              <Text size="sm" c="red" mb="sm">
+              <p className="text-sm text-destructive">
                 Sending failed. Please check your connection and try again.
-              </Text>
+              </p>
             )}
-            <Group justify="flex-end">
-              <Button variant="default" onClick={close} disabled={state === 'sending'}>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                disabled={state === 'sending'}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleSend} loading={state === 'sending'}>
-                Send report
+              <Button onClick={handleSend} disabled={state === 'sending'}>
+                {state === 'sending' ? 'Sending…' : 'Send report'}
               </Button>
-            </Group>
+            </DialogFooter>
           </>
         )}
-      </Modal>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }
