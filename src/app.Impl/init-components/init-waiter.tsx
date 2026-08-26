@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Loader, Stack, Text } from '@mantine/core';
+import { IconLoader2 } from '@tabler/icons-react';
 import { InitAppBackground } from './init-app-background';
 
 export type InitWaiterProps = {
@@ -12,7 +12,7 @@ export function InitWaiter(props: InitWaiterProps) {
   if (props.error) {
     return (
       <InitAppBackground>
-        <Text c="red">{props.error}</Text>
+        <p className="text-red-600">{props.error}</p>
       </InitAppBackground>
     );
   }
@@ -20,10 +20,10 @@ export function InitWaiter(props: InitWaiterProps) {
   if (props.loadingLabel) {
     return (
       <InitAppBackground>
-        <Stack align="center" gap="sm">
-          <Loader />
-          <Text>{props.loadingLabel}</Text>
-        </Stack>
+        <div className="flex flex-col items-center gap-2">
+          <IconLoader2 className="animate-spin" size={28} />
+          <p>{props.loadingLabel}</p>
+        </div>
       </InitAppBackground>
     );
   }

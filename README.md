@@ -1,13 +1,15 @@
-# Mantine Vite template
+# AI Console Portal
 
 ## Features
 
-This template comes with the following features:
+This app comes with the following features:
 
-- [PostCSS](https://postcss.org/) with [mantine-postcss-preset](https://mantine.dev/styles/postcss-preset)
+- [Tailwind CSS v4](https://tailwindcss.com/) with [shadcn/ui](https://ui.shadcn.com/) components
+- [react-hook-form](https://react-hook-form.com/) for forms
 - [TypeScript](https://www.typescriptlang.org/)
 - [Storybook](https://storybook.js.org/)
 - [Vitest](https://vitest.dev/) setup with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
+- [Playwright](https://playwright.dev/) end-to-end tests
 - Oxlint setup for TypeScript and React sources
 
 ## npm scripts

@@ -1,6 +1,6 @@
 import { apiSlice } from '@/app.Commons/dataLayer/apiSlice';
 import { USER_GET_URI, USERS_LIST_URI } from './userConst';
-import type { NewUser, User } from './userDto';
+import type { NewUser, User, UserPatch } from './userDto';
 
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,13 +18,13 @@ export const userApi = apiSlice.injectEndpoints({
             ]
           : [{ type: 'User' as const, id: 'LIST' }],
     }),
-    updateUser: builder.mutation<User, User>({
-      query: (user) => ({
-        url: USER_GET_URI(user.Id),
-        method: 'PUT',
-        body: user,
+    patchUser: builder.mutation<User, { userId: number; patch: UserPatch }>({
+      query: ({ userId, patch }) => ({
+        url: USER_GET_URI(userId),
+        method: 'PATCH',
+        body: patch,
       }),
-      invalidatesTags: (_result, _error, user) => [{ type: 'User', id: user.Id }],
+      invalidatesTags: (_result, _error, { userId }) => [{ type: 'User', id: userId }],
     }),
     createUser: builder.mutation<User, NewUser>({
       query: (newUser) => ({
@@ -48,7 +48,7 @@ export const {
   useLazyGetUserQuery,
   useGetUsersQuery,
   useLazyGetUsersQuery,
-  useUpdateUserMutation,
+  usePatchUserMutation,
   useCreateUserMutation,
 } = userApi;
 
@@ -58,8 +58,8 @@ export const useGetUser = useGetUserQuery;
 /** Alias for the RTK-generated `useGetUsersQuery`. */
 export const useGetUsers = useGetUsersQuery;
 
-/** Alias for the RTK-generated `useUpdateUserMutation`. */
-export const useUpdateUser = useUpdateUserMutation;
+/** Alias for the RTK-generated `usePatchUserMutation`. */
+export const usePatchUser = usePatchUserMutation;
 
 /** Alias for the RTK-generated `useCreateUserMutation`. */
 export const useCreateUser = useCreateUserMutation;

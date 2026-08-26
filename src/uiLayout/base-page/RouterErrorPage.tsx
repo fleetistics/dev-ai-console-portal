@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouteError } from 'react-router';
-import { Button, Center, Stack, Text, Title } from '@mantine/core';
 import { log, reportCrash } from '@/app.Impl/flightRecorder';
+import { Button } from '@/components/ui/button';
 
 export function RouterErrorPage() {
   const error = useRouteError() as Error | undefined;
@@ -14,12 +14,12 @@ export function RouterErrorPage() {
   }, [error]);
 
   return (
-    <Center mih="100vh">
-      <Stack align="center" gap="sm">
-        <Title order={1}>ERROR</Title>
-        <Text>{error?.message || 'Some Error'}</Text>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-2">
+        <h1 className="text-2xl font-bold">ERROR</h1>
+        <p>{error?.message || 'Some Error'}</p>
         <Button onClick={() => window.location.replace('/')}>Go to homepage</Button>
-      </Stack>
-    </Center>
+      </div>
+    </div>
   );
 }

@@ -17,7 +17,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: '/users',
-        // Code-split: mantine-react-table + libphonenumber-js only load when a
+        // Code-split: @tanstack/react-table + libphonenumber-js only load when a
         // user actually navigates here, instead of bloating the initial bundle.
         // BasePageLayout shows a top progress bar via useNavigation() while this
         // chunk (and any future ones) is fetched.

@@ -3,13 +3,13 @@ import { rowWith } from './support/dom';
 import { ALICE, SESSION } from './support/fixtures';
 import { installApiMock, jsonRoute, type RecordedRequest } from './support/mockApi';
 
-test('edits a user and sees the updated value in the table', async ({ page }) => {
+test('edits a user, sending only the changed field via PATCH', async ({ page }) => {
   let current = { ...ALICE };
   const api = await installApiMock(page, {
     'POST /api/auth/CheckSession': jsonRoute(SESSION),
     'GET /api/users': async (route) => jsonRoute([current])(route),
-    'PUT /api/users/1': async (route, recorded) => {
-      current = recorded.body as typeof ALICE;
+    'PATCH /api/users/1': async (route, recorded) => {
+      current = { ...current, ...(recorded.body as Partial<typeof ALICE>) };
       await jsonRoute(current)(route);
     },
   });
@@ -32,8 +32,10 @@ test('edits a user and sees the updated value in the table', async ({ page }) =>
   await expect(dialog).toBeHidden();
   await expect(rowWith(page, 'Alicia')).toBeVisible();
 
-  const put = api.requests.find((r: RecordedRequest) => r.method === 'PUT');
-  expect(put).toBeDefined();
-  expect(put!.pathname).toBe('/api/users/1');
-  expect((put!.body as { DisplayName: string }).DisplayName).toBe('Alicia');
+  // The whole point of the PATCH rewrite: only the changed field goes over
+  // the wire, not the full user object.
+  const patch = api.requests.find((r: RecordedRequest) => r.method === 'PATCH');
+  expect(patch).toBeDefined();
+  expect(patch!.pathname).toBe('/api/users/1');
+  expect(patch!.body).toEqual({ DisplayName: 'Alicia' });
 });

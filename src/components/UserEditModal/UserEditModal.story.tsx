@@ -3,7 +3,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { store } from '@/app.Commons/dataLayer/store';
 import { UserEditModal } from './UserEditModal';
 
-// The modal uses RTK Query hooks (useCreateUser/useUpdateUser/useUploadMedia),
+// The modal uses RTK Query hooks (useCreateUser/usePatchUser/useUploadMedia),
 // which need Redux context to mount — the real store is fine here since these
 // stories are for visual review only. Submitting the form makes a real network
 // call that Storybook doesn't mock; interaction coverage with a mocked API

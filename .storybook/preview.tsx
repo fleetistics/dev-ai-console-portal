@@ -1,9 +1,7 @@
-import '@mantine/core/styles.css';
-
 import { useEffect } from 'react';
 import { useGlobals } from 'storybook/preview-api';
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { theme } from '../src/theme';
+import { TooltipProvider } from '../src/components/ui/tooltip';
+import '../src/globals.css';
 
 export const parameters = {
   layout: 'fullscreen',
@@ -18,7 +16,7 @@ export const parameters = {
 export const globalTypes = {
   theme: {
     name: 'Theme',
-    description: 'Mantine color scheme',
+    description: 'Color scheme',
     defaultValue: 'light',
     toolbar: {
       icon: 'mirror',
@@ -52,11 +50,11 @@ export const decorators = [
     }, [storybookTheme, updateGlobals]);
 
     const scheme = (context.globals.theme || 'light') as 'light' | 'dark';
-    return (
-      <MantineProvider theme={theme} forceColorScheme={scheme}>
-        <ColorSchemeScript />
-        {renderStory()}
-      </MantineProvider>
-    );
+
+    useEffect(() => {
+      document.documentElement.classList.toggle('dark', scheme === 'dark');
+    }, [scheme]);
+
+    return <TooltipProvider>{renderStory()}</TooltipProvider>;
   },
 ];

@@ -1,13 +1,50 @@
-import { Button, Group, useMantineColorScheme } from '@mantine/core';
+import { IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
+import { useColorScheme } from '@/app.Commons/theme/useColorScheme';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+const SCHEME_ICONS = {
+  light: IconSun,
+  dark: IconMoon,
+  auto: IconDeviceDesktop,
+} as const;
 
 export function ColorSchemeToggle() {
-  const { setColorScheme } = useMantineColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
+  const Icon = SCHEME_ICONS[colorScheme];
 
   return (
-    <Group justify="center" mt="xl">
-      <Button onClick={() => setColorScheme('light')}>Light</Button>
-      <Button onClick={() => setColorScheme('dark')}>Dark</Button>
-      <Button onClick={() => setColorScheme('auto')}>Auto</Button>
-    </Group>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="Toggle color scheme">
+          <Icon size={18} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup
+          value={colorScheme}
+          onValueChange={(value) => setColorScheme(value as keyof typeof SCHEME_ICONS)}
+        >
+          <DropdownMenuRadioItem value="light">
+            <IconSun size={16} />
+            Light
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark">
+            <IconMoon size={16} />
+            Dark
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="auto">
+            <IconDeviceDesktop size={16} />
+            Auto
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

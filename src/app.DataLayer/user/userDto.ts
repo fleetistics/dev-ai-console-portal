@@ -18,3 +18,12 @@ export type NewUser = Concrete<
   UserDtoSchema,
   'UserName' | 'DisplayName' | 'FullName' | 'Phone' | 'Email'
 >;
+
+// Unlike UserDtoSchema, this one doesn't need Concrete<>'s null-narrowing — the
+// server's Optional<T> schema transformer faithfully encodes each field's real
+// nullability (see UserPatchDto.cs / OptionalPropertySchemaTransformer.cs), so
+// the generated type is already accurate.
+export type UserPatch = Pick<
+  components['schemas']['UserPatchDto'],
+  'DisplayName' | 'FullName' | 'Phone' | 'Email' | 'AvatarImageId'
+>;

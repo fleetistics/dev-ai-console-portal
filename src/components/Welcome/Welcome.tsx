@@ -1,23 +1,17 @@
-import { Anchor, Text, Title } from '@mantine/core';
-import classes from './Welcome.module.css';
+import { AppConfig } from '@/app.Impl/configs/AppConfig';
 
 export function Welcome() {
   return (
     <>
-      <Title className={classes.title} ta="center" mt={100}>
+      <h1 className="mt-24 text-center text-4xl font-bold">
         Welcome to{' '}
-        <Text inherit variant="gradient" component="span" gradient={{ from: 'pink', to: 'yellow' }}>
-          Mantine
-        </Text>
-      </Title>
-      <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
-        This starter Vite project includes a minimal setup, if you want to learn more on Mantine +
-        Vite integration follow{' '}
-        <Anchor href="https://mantine.dev/guides/vite/" size="lg">
-          this guide
-        </Anchor>
-        . To get started edit pages/Home.page.tsx file.
-      </Text>
+        <span className="bg-gradient-to-r from-pink-500 to-amber-400 bg-clip-text text-transparent">
+          {AppConfig.APP_NAME || 'the Console'}
+        </span>
+      </h1>
+      <p className="mx-auto mt-8 max-w-xl text-center text-lg text-muted-foreground">
+        Use the navigation to manage users and other resources.
+      </p>
     </>
   );
 }

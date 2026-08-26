@@ -1,7 +1,11 @@
 import type { ReactNode } from 'react';
-import { Center } from '@mantine/core';
+import { cn } from '@/lib/utils';
 import classes from './init-app-background.module.css';
 
 export function InitAppBackground(props: { children?: ReactNode }) {
-  return <Center className={classes.background}>{props.children}</Center>;
+  return (
+    <div className={cn(classes.background, 'flex items-center justify-center')}>
+      {props.children}
+    </div>
+  );
 }

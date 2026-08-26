@@ -1,37 +1,36 @@
-import { SubmitEvent, useState } from 'react';
-import {
-  Alert,
-  Anchor,
-  Button,
-  Checkbox,
-  Group,
-  Paper,
-  PasswordInput,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core';
+import { useState } from 'react';
+import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { useForm } from 'react-hook-form';
 import { useLoginMutation } from '@/app.Commons/userSession/userSessionApi';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+type FormValues = {
+  UserName: string;
+  Password: string;
+  RememberMe: boolean;
+};
 
 export function LoginPage(props: { reloadSessionFunc?: () => void }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const [login, loginState] = useLoginMutation();
+  const { register, handleSubmit } = useForm<FormValues>({
+    defaultValues: { UserName: '', Password: '', RememberMe: false },
+  });
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit(async (values) => {
     try {
-      await login({ UserName: username, Password: password, RememberMe: rememberMe }).unwrap();
+      await login(values).unwrap();
       // Re-runs the session check, which stores the token and swaps in the app UI.
       props.reloadSessionFunc?.();
     } catch {
       // Rendered below from loginState.error.
     }
-  };
+  });
 
   const loginError = loginState.isError
     ? (loginState.error as { status?: unknown }).status === 401
@@ -40,58 +39,69 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
     : undefined;
 
   return (
-    <Paper withBorder shadow="sm" radius="md" p="xl" w={360}>
-      <form onSubmit={handleSubmit}>
-        <Stack gap="md">
-          <div>
-            <Text fw={700} size="lg" c="blue">
-              {AppConfig.APP_NAME || 'Console'}
-            </Text>
-            <Text size="sm" c="dimmed">
-              Development Console
-            </Text>
-          </div>
+    <div className="w-[360px] rounded-lg border bg-card p-8 shadow-sm">
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <div>
+          <p className="text-lg font-bold text-primary">{AppConfig.APP_NAME || 'Console'}</p>
+          <p className="text-sm text-muted-foreground">Development Console</p>
+        </div>
 
-          <Title order={3}>Sign in</Title>
+        <h3 className="text-xl font-semibold">Sign in</h3>
 
-          <TextInput
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.currentTarget.value)}
+        <div className="space-y-1">
+          <Label htmlFor="UserName">Username</Label>
+          <Input
+            id="UserName"
             autoComplete="username"
             required
+            {...register('UserName', { required: true })}
           />
+        </div>
 
-          <PasswordInput
-            label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            autoComplete="current-password"
-            required
-          />
-
-          <Group justify="space-between">
-            <Checkbox
-              label="Remember me"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.currentTarget.checked)}
+        <div className="space-y-1">
+          <Label htmlFor="Password">Password</Label>
+          <div className="relative">
+            <Input
+              id="Password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              className="pr-9"
+              {...register('Password', { required: true })}
             />
-            <Anchor href="#" size="sm">
-              Forgot password?
-            </Anchor>
-          </Group>
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+            >
+              {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+            </button>
+          </div>
+        </div>
 
-          {loginError && (
-            <Alert color="red" variant="light">
-              {loginError}
-            </Alert>
-          )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Checkbox id="RememberMe" {...register('RememberMe')} />
+            <Label htmlFor="RememberMe" className="font-normal">
+              Remember me
+            </Label>
+          </div>
+          <a href="#" className="text-sm text-primary underline-offset-4 hover:underline">
+            Forgot password?
+          </a>
+        </div>
 
-          <Button type="submit" fullWidth loading={loginState.isLoading}>
-            Sign in
-          </Button>
-        </Stack>
+        {loginError && (
+          <Alert variant="destructive">
+            <AlertDescription>{loginError}</AlertDescription>
+          </Alert>
+        )}
+
+        <Button type="submit" className="w-full" disabled={loginState.isLoading}>
+          {loginState.isLoading ? 'Signing in…' : 'Sign in'}
+        </Button>
       </form>
-    </Paper>
+    </div>
   );
 }

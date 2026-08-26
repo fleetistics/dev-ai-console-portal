@@ -1,159 +1,287 @@
 import { useMemo, useState } from 'react';
-import { IconPencil, IconSearch, IconUserPlus } from '@tabler/icons-react';
+import {
+  IconArrowsVertical,
+  IconColumns,
+  IconPencil,
+  IconSearch,
+  IconUserPlus,
+  IconX,
+} from '@tabler/icons-react';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+  type VisibilityState,
+} from '@tanstack/react-table';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import {
-  MantineReactTable,
-  MRT_ShowHideColumnsButton,
-  MRT_ToggleDensePaddingButton,
-  type MRT_ColumnDef,
-  useMantineReactTable,
-} from 'mantine-react-table';
-import {
-  ActionIcon,
-  Alert,
-  Avatar,
-  CloseButton,
-  Container,
-  Group,
-  Text,
-  TextInput,
-  Title,
-  Tooltip,
-} from '@mantine/core';
 import { getErrorMessage, getErrorTraceId } from '@/app.Commons/dataLayer/apiError';
 import { useGetUsers } from '@/app.DataLayer/user/userApi';
 import type { User } from '@/app.DataLayer/user/userDto';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { UserEditModal } from '@/components/UserEditModal/UserEditModal';
+import { cn } from '@/lib/utils';
+
+const columnHelper = createColumnHelper<User>();
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
 
 export function UsersPage() {
   const { data: users, isLoading, isError, error } = useGetUsers();
   // null = modal closed; { user: null } = "Add user" (empty form); { user } = "Edit user"
   const [editorState, setEditorState] = useState<{ user: User | null } | null>(null);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
 
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
+  const columns = useMemo(
     () => [
-      {
+      columnHelper.display({
         id: 'edit',
-        header: '',
-        columnDefType: 'display',
-        grow: false,
         size: 40,
-        Cell: ({ row }) => (
-          <Tooltip label="Edit user">
-            <ActionIcon
-              variant="subtle"
-              aria-label="Edit user"
-              onClick={() => setEditorState({ user: row.original })}
-            >
-              <IconPencil size={16} />
-            </ActionIcon>
+        cell: ({ row }) => (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Edit user"
+                onClick={() => setEditorState({ user: row.original })}
+              >
+                <IconPencil size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit user</TooltipContent>
           </Tooltip>
         ),
-      },
-      {
+      }),
+      columnHelper.display({
         id: 'avatar',
-        header: '',
-        columnDefType: 'display',
-        grow: false,
         size: 40,
-        Cell: ({ row }) => {
+        cell: ({ row }) => {
           const avatarImage = row.original.AvatarImage;
           return (
-            <Avatar
-              src={avatarImage?.PreviewUrl ?? avatarImage?.Url}
-              name={row.original.DisplayName}
-              color="initials"
-              size={25}
-              radius="xl"
-            />
+            <Avatar className="size-6">
+              <AvatarImage src={avatarImage?.PreviewUrl ?? avatarImage?.Url} />
+              <AvatarFallback className="text-[10px]">
+                {initials(row.original.DisplayName)}
+              </AvatarFallback>
+            </Avatar>
           );
         },
-      },
-      { accessorKey: 'DisplayName', header: 'Display Name' },
-      { accessorKey: 'FullName', header: 'Full Name' },
-      {
-        accessorKey: 'Phone',
+      }),
+      columnHelper.accessor('DisplayName', { header: 'Display Name' }),
+      columnHelper.accessor('FullName', { header: 'Full Name' }),
+      columnHelper.accessor('Phone', {
         header: 'Phone',
-        Cell: ({ cell }) => {
-          const value = cell.getValue<string>();
+        cell: ({ getValue }) => {
+          const value = getValue();
           const parsed = parsePhoneNumberFromString(value, 'US');
           return parsed?.isValid() ? parsed.formatNational() : value;
         },
-      },
-      { accessorKey: 'Email', header: 'Email' },
+      }),
+      columnHelper.accessor('Email', { header: 'Email' }),
     ],
     []
   );
 
-  const table = useMantineReactTable({
+  const table = useReactTable({
     columns,
     data: users ?? [],
     getRowId: (row) => String(row.Id),
+    state: { globalFilter, columnVisibility },
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnVisibilityChange: setColumnVisibility,
+    globalFilterFn: 'includesString',
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     enableColumnResizing: true,
-    enableGlobalFilter: true,
-    globalFilterFn: 'contains',
-    layoutMode: 'grid',
-    mantinePaperProps: { withBorder: false, shadow: 'none' },
-    initialState: { density: 'xs' },
-    // globalFilterFn also passed as controlled state: MRT seeds its filter-mode state from
-    // this option only via a useState initializer, so a hot-reloaded session that mounted
-    // before this was set to 'contains' would otherwise keep running the old 'fuzzy' default.
-    state: { isLoading, globalFilterFn: 'contains' },
-    // MRT's own animated search-toggle button renders a zero-size input under this
-    // project's Mantine version (its Collapse transition never expands), so the global
-    // filter is driven by a plain always-visible TextInput instead of MRT_ToggleGlobalFilterButton.
-    renderTopToolbarCustomActions: ({ table }) => {
-      const filterValue = table.getState().globalFilter ?? '';
-      return (
-        <TextInput
-          placeholder="Filter users..."
-          value={filterValue}
-          onChange={(event) => table.setGlobalFilter(event.currentTarget.value)}
-          leftSection={<IconSearch size={16} />}
-          rightSection={
-            filterValue ? (
-              <CloseButton aria-label="Clear filter" onClick={() => table.setGlobalFilter('')} />
-            ) : null
-          }
-          w={250}
-        />
-      );
-    },
-    renderToolbarInternalActions: ({ table }) => (
-      <Group gap="xs">
-        <MRT_ShowHideColumnsButton table={table} />
-        <MRT_ToggleDensePaddingButton table={table} />
-        <Tooltip label="Add user">
-          <ActionIcon
-            variant="subtle"
-            aria-label="Add user"
-            onClick={() => setEditorState({ user: null })}
-          >
-            <IconUserPlus size={18} />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-    ),
+    columnResizeMode: 'onChange',
   });
 
+  const cellPadding = density === 'compact' ? 'py-1' : 'py-3';
+  const visibleColumnCount = table.getVisibleLeafColumns().length;
+
   return (
-    <Container size="xl" py="xs" px="xs">
-      <Title order={2} mb="md">
-        Users
-      </Title>
+    <div className="mx-auto max-w-6xl px-2 py-2">
+      <h2 className="mb-4 text-2xl font-semibold">Users</h2>
 
       {isError && (
-        <Alert color="red" title="Failed to load users" mb="md">
-          {getErrorMessage(error)}
-          {getErrorTraceId(error) && (
-            <Text size="xs" c="dimmed" mt={4}>
-              Support code: {getErrorTraceId(error)}
-            </Text>
-          )}
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Failed to load users</AlertTitle>
+          <AlertDescription>
+            {getErrorMessage(error)}
+            {getErrorTraceId(error) && (
+              <p className="mt-1 text-xs">Support code: {getErrorTraceId(error)}</p>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 
-      <MantineReactTable table={table} />
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="relative w-[250px]">
+          <IconSearch
+            size={16}
+            className="text-muted-foreground absolute top-1/2 left-2 -translate-y-1/2"
+          />
+          <Input
+            placeholder="Filter users..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="pr-8 pl-8"
+          />
+          {globalFilter && (
+            <button
+              type="button"
+              aria-label="Clear filter"
+              onClick={() => setGlobalFilter('')}
+              className="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2"
+            >
+              <IconX size={14} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Show/hide columns">
+                <IconColumns size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table.getAllLeafColumns().map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(checked) => column.toggleVisibility(!!checked)}
+                  onSelect={(event) => event.preventDefault()}
+                >
+                  {typeof column.columnDef.header === 'string'
+                    ? column.columnDef.header
+                    : column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Toggle density"
+                onClick={() => setDensity((d) => (d === 'compact' ? 'comfortable' : 'compact'))}
+              >
+                <IconArrowsVertical size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Toggle density</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Add user"
+                onClick={() => setEditorState({ user: null })}
+              >
+                <IconUserPlus size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add user</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    style={{ width: header.getSize() }}
+                    className="relative"
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    <div
+                      aria-hidden="true"
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className="absolute top-0 right-0 h-full w-1 cursor-col-resize select-none"
+                    />
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {table.getAllLeafColumns().map((column) => (
+                    <TableCell key={column.id} className={cellPadding}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={visibleColumnCount}
+                  className="text-muted-foreground text-center"
+                >
+                  No users found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(cellPadding)}
+                      style={{ width: cell.column.getSize() }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       <UserEditModal
         key={editorState === null ? 'closed' : (editorState.user?.Id ?? 'new')}
@@ -161,6 +289,6 @@ export function UsersPage() {
         user={editorState?.user ?? null}
         onClose={() => setEditorState(null)}
       />
-    </Container>
+    </div>
   );
 }
