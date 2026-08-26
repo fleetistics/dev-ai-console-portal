@@ -8,17 +8,20 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "typecheck:e2e": "tsc -p e2e/tsconfig.json",
     "lint": "npm run oxlint && npm run stylelint",
     "oxlint": "oxlint -c oxlint.config.mjs .",
-    "stylelint": "stylelint '**/*.css' --cache",
+    "stylelint": "stylelint \"**/*.css\" --cache",
     "format:test": "oxfmt -c oxfmt.config.mjs --check \"**/*.{ts,tsx}\"",
     "format:write": "oxfmt -c oxfmt.config.mjs --write \"**/*.{ts,tsx}\"",
     "vitest": "vitest run",
     "vitest:watch": "vitest",
-    "test": "npm run typecheck && npm run format:test && npm run lint && npm run vitest && npm run build",
+    "test": "npm run typecheck && npm run typecheck:e2e && npm run format:test && npm run lint && npm run vitest && npm run build",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
-    "generate:api": "yarn dlx -q -p typescript@^5.9.2 -p openapi-typescript@^7 openapi-typescript http://localhost:5199/openapi/v1.json -o src/app.DataLayer/apiSchema.d.ts"
+    "generate:api": "yarn dlx -q -p typescript@^5.9.2 -p openapi-typescript@^7 openapi-typescript http://localhost:5199/openapi/v1.json -o src/app.DataLayer/apiSchema.d.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@mantine/core": "9.5.1",
@@ -27,18 +30,17 @@
     "@mantine/hooks": "9.5.1",
     "@reduxjs/toolkit": "^2.12.0",
     "@tabler/icons-react": "^3.46.0",
-    "@tanstack/react-query": "^5.101.4",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.23",
     "libphonenumber-js": "^1.13.11",
     "mantine-react-table": "^2.0.0-beta.9",
-    "ofetch": "^1.5.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-redux": "^9.3.0",
     "react-router": "^7.9.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@storybook/addon-themes": "^10.0.0",
     "@storybook/react": "^10.0.0",
     "@storybook/react-vite": "^10.0.0",
@@ -51,7 +53,7 @@
     "@types/react-dom": "^19.2.1",
     "@vitejs/plugin-react": "^6.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.0",
     "oxc-config-mantine": "^1.0.0",
     "oxfmt": "^0.62.0",
     "oxlint": "^1.70.0",
@@ -66,5 +68,8 @@
     "vite": "^8.0.0",
     "vitest": "^4.1.0"
   },
-  "packageManager": "yarn@4.18.0"
+  "packageManager": "yarn@4.18.0",
+  "engines": {
+    "node": ">=22"
+  }
 }

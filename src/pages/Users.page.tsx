@@ -5,7 +5,6 @@ import {
   MantineReactTable,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
-  MRT_ToggleFullScreenButton,
   type MRT_ColumnDef,
   useMantineReactTable,
 } from 'mantine-react-table';
@@ -16,10 +15,12 @@ import {
   CloseButton,
   Container,
   Group,
+  Text,
   TextInput,
   Title,
   Tooltip,
 } from '@mantine/core';
+import { getErrorMessage, getErrorTraceId } from '@/app.Commons/dataLayer/apiError';
 import { useGetUsers } from '@/app.DataLayer/user/userApi';
 import type { User } from '@/app.DataLayer/user/userDto';
 import { UserEditModal } from '@/components/UserEditModal/UserEditModal';
@@ -143,7 +144,12 @@ export function UsersPage() {
 
       {isError && (
         <Alert color="red" title="Failed to load users" mb="md">
-          {JSON.stringify(error)}
+          {getErrorMessage(error)}
+          {getErrorTraceId(error) && (
+            <Text size="xs" c="dimmed" mt={4}>
+              Support code: {getErrorTraceId(error)}
+            </Text>
+          )}
         </Alert>
       )}
 

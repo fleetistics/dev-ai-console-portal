@@ -16,7 +16,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    userId: number | string;
+                    userId: number;
                 };
                 cookie?: never;
             };
@@ -31,6 +31,15 @@ export interface paths {
                         "application/json": components["schemas"]["UserDto"];
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
             };
         };
         put: {
@@ -38,7 +47,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    userId: number | string;
+                    userId: number;
                 };
                 cookie?: never;
             };
@@ -57,6 +66,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["UserDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
                     };
                 };
             };
@@ -150,7 +168,7 @@ export interface paths {
                         File?: components["schemas"]["IFormFile"];
                         Name?: string;
                         /** Format: uint8 */
-                        MediaType?: number | string;
+                        MediaType?: number;
                         Extension?: string;
                     };
                 };
@@ -432,45 +450,45 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AppVersionInfo: {
-            appUid?: string;
-            appVersion?: string;
+            AppUid?: string;
+            AppVersion?: string;
         };
         /** Format: binary */
         IFormFile: string;
         LoginData: {
-            userName: string;
-            password: string;
-            rememberMe?: null | boolean;
+            UserName: string;
+            Password: string;
+            RememberMe?: null | boolean;
         };
         ProblemDetails: {
             type?: null | string;
             title?: null | string;
             /** Format: int32 */
-            status?: null | number | string;
+            status?: null | number;
             detail?: null | string;
             instance?: null | string;
         };
         UploadedMediaDto: {
             /** Format: int32 */
-            id?: number | string;
-            url?: null | string;
-            previewUrl?: null | string;
+            Id?: number;
+            Url?: null | string;
+            PreviewUrl?: null | string;
             /** Format: uint8 */
-            mediaType?: number | string;
+            MediaType?: number;
         };
         UserDto: {
             /** Format: int32 */
-            id?: number | string;
-            displayName?: string;
-            userName?: string;
+            Id?: number;
+            DisplayName?: string;
+            UserName?: string;
             /** Format: int16 */
-            statusId?: number | string;
-            fullName?: null | string;
-            phone?: null | string;
-            email?: null | string;
+            StatusId?: number;
+            FullName?: null | string;
+            Phone?: null | string;
+            Email?: null | string;
             /** Format: int32 */
-            avatarImageId?: null | number | string;
-            avatarImage?: null | components["schemas"]["UploadedMediaDto"];
+            AvatarImageId?: null | number;
+            AvatarImage?: null | components["schemas"]["UploadedMediaDto"];
         };
     };
     responses: never;

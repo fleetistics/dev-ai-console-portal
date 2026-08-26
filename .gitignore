@@ -130,3 +130,12 @@ dist
 .pnp.*
 
 .DS_Store
+
+# Storybook build output
+storybook-static
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
