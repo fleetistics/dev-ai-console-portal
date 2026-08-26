@@ -1,4 +1,5 @@
 import { apiSlice, AuthToken } from '@/app.Commons/dataLayer/apiSlice';
+import { changeLanguage } from '@/app.Commons/i18n/i18n';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
 import { USER_SESSION_CHECK_SESSION_URI, USER_SESSION_LOGIN_URI } from './userSessionConst';
 import type { LoginData, UserSessionCheckResponse } from './userSessionDto';
@@ -22,11 +23,18 @@ export const userSessionApi = apiSlice.injectEndpoints({
         },
       }),
       // Seed the bearer token every ordinary request depends on — on initial load
-      // and on every refetch (login, auth-lost recheck).
+      // and on every refetch (login, auth-lost recheck). Also the one place the
+      // server's PreferredLanguage is pulled: login.tsx's reloadSessionFunc refetches
+      // this same query, so a fresh login already flows through here too, not just
+      // app-start — it's the source of truth once authenticated, overriding whatever
+      // localStorage had (a different device, or a browser profile switch).
       onQueryStarted: async (_arg, { queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
           AuthToken.set(data.accessToken);
+          if (data.preferredLanguage) {
+            void changeLanguage(data.preferredLanguage);
+          }
         } catch {
           // 401 / network failure: stay logged out; the provider renders the login UI.
         }

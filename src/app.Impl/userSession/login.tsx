@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useLoginMutation } from '@/app.Commons/userSession/userSessionApi';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,6 +17,7 @@ type FormValues = {
 };
 
 export function LoginPage(props: { reloadSessionFunc?: () => void }) {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [login, loginState] = useLoginMutation();
   const { register, handleSubmit } = useForm<FormValues>({
@@ -34,22 +36,22 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
 
   const loginError = loginState.isError
     ? (loginState.error as { status?: unknown }).status === 401
-      ? 'Invalid username or password'
-      : 'Sign in failed — please try again'
+      ? t('Invalid username or password')
+      : t('Sign in failed — please try again')
     : undefined;
 
   return (
     <div className="w-[360px] rounded-lg border bg-card p-8 shadow-sm">
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div>
-          <p className="text-lg font-bold text-primary">{AppConfig.APP_NAME || 'Console'}</p>
-          <p className="text-sm text-muted-foreground">Development Console</p>
+          <p className="text-lg font-bold text-primary">{AppConfig.APP_NAME || t('Console')}</p>
+          <p className="text-sm text-muted-foreground">{t('Development Console')}</p>
         </div>
 
-        <h3 className="text-xl font-semibold">Sign in</h3>
+        <h3 className="text-xl font-semibold">{t('Sign in')}</h3>
 
         <div className="space-y-1">
-          <Label htmlFor="UserName">Username</Label>
+          <Label htmlFor="UserName">{t('Username')}</Label>
           <Input
             id="UserName"
             autoComplete="username"
@@ -59,7 +61,7 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="Password">Password</Label>
+          <Label htmlFor="Password">{t('Password')}</Label>
           <div className="relative">
             <Input
               id="Password"
@@ -72,7 +74,7 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? t('Hide password') : t('Show password')}
               className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
             >
               {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
@@ -84,11 +86,11 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
           <div className="flex items-center gap-2">
             <Checkbox id="RememberMe" {...register('RememberMe')} />
             <Label htmlFor="RememberMe" className="font-normal">
-              Remember me
+              {t('Remember me')}
             </Label>
           </div>
           <a href="#" className="text-sm text-primary underline-offset-4 hover:underline">
-            Forgot password?
+            {t('Forgot password?')}
           </a>
         </div>
 
@@ -99,7 +101,7 @@ export function LoginPage(props: { reloadSessionFunc?: () => void }) {
         )}
 
         <Button type="submit" className="w-full" disabled={loginState.isLoading}>
-          {loginState.isLoading ? 'Signing in…' : 'Sign in'}
+          {loginState.isLoading ? t('Signing in…') : t('Sign in')}
         </Button>
       </form>
     </div>

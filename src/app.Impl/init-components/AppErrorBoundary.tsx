@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import i18next from 'i18next';
 import { log, reportCrash } from '@/app.Impl/flightRecorder';
 import { InitError } from './init-error';
 
@@ -39,7 +40,7 @@ export class AppErrorBoundary extends Component<Props, State> {
     if (this.state.error) {
       return (
         <InitError
-          title="Something went wrong"
+          title={i18next.t('Something went wrong')}
           errorMsg={this.state.error.message}
           retryFunc={this.handleRetry}
         />

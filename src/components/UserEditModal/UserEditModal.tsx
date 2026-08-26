@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { getErrorMessage, getErrorTraceId } from '@/app.Commons/dataLayer/apiError';
 import { useUploadMedia } from '@/app.DataLayer/media/mediaApi';
 import { MediaType, type UploadedMedia } from '@/app.DataLayer/media/uploadedMedia';
@@ -50,6 +51,7 @@ const requiredLabel = (label: string) => (
 );
 
 export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
+  const { t } = useTranslation();
   const isCreating = user === null;
   const [patchUser, patchState] = usePatchUser();
   const [createUser, createState] = useCreateUser();
@@ -137,7 +139,7 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
     <Dialog open={opened} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isCreating ? 'Add user' : 'Edit user'}</DialogTitle>
+          <DialogTitle>{isCreating ? t('Add user') : t('Edit user')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={onSubmit} className="flex items-start gap-4">
@@ -148,7 +150,9 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
               </Avatar>
             ) : (
               <div className="bg-muted/50 flex size-48 items-center justify-center rounded-md border border-dashed">
-                <p className="text-muted-foreground px-1 text-center text-xs">No Image Uploaded</p>
+                <p className="text-muted-foreground px-1 text-center text-xs">
+                  {t('No Image Uploaded')}
+                </p>
               </div>
             )}
             <input
@@ -165,7 +169,7 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
               disabled={isUploading}
               onClick={() => fileInputRef.current?.click()}
             >
-              {isUploading ? 'Uploading…' : 'Upload'}
+              {isUploading ? t('Uploading…') : t('Upload')}
             </Button>
             {avatarUrl && (
               <Button
@@ -175,19 +179,21 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
                 className="text-destructive"
                 onClick={() => setAvatarImage(null)}
               >
-                Clear
+                {t('Clear')}
               </Button>
             )}
-            {uploadError && <p className="text-destructive text-center text-xs">Upload failed</p>}
+            {uploadError && (
+              <p className="text-destructive text-center text-xs">{t('Upload failed')}</p>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-3">
             {isCreating && (
               <div className="space-y-1">
-                <Label htmlFor="UserName">{requiredLabel('Username')}</Label>
+                <Label htmlFor="UserName">{requiredLabel(t('Username'))}</Label>
                 <Input
                   id="UserName"
-                  {...register('UserName', { required: 'Username is required' })}
+                  {...register('UserName', { required: t('Username is required') })}
                 />
                 {errors.UserName && (
                   <p className="text-destructive text-xs">{errors.UserName.message}</p>
@@ -196,11 +202,11 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
             )}
 
             <div className="space-y-1">
-              <Label htmlFor="DisplayName">{requiredLabel('Display Name')}</Label>
+              <Label htmlFor="DisplayName">{requiredLabel(t('Display Name'))}</Label>
               <Input
                 id="DisplayName"
                 {...register('DisplayName', {
-                  validate: (value) => value.trim().length > 0 || 'Display name is required',
+                  validate: (value) => value.trim().length > 0 || t('Display name is required'),
                 })}
               />
               {errors.DisplayName && (
@@ -209,28 +215,28 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="FullName">Full Name</Label>
+              <Label htmlFor="FullName">{t('Full Name')}</Label>
               <Input id="FullName" {...register('FullName')} />
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="Phone">Phone</Label>
+              <Label htmlFor="Phone">{t('Phone')}</Label>
               <Input
                 id="Phone"
                 {...register('Phone', {
                   validate: (value) =>
-                    !value.trim() || isValidPhoneNumber(value, 'US') || 'Invalid phone number',
+                    !value.trim() || isValidPhoneNumber(value, 'US') || t('Invalid phone number'),
                 })}
               />
               {errors.Phone && <p className="text-destructive text-xs">{errors.Phone.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="Email">{requiredLabel('Email')}</Label>
+              <Label htmlFor="Email">{requiredLabel(t('Email'))}</Label>
               <Input
                 id="Email"
                 {...register('Email', {
-                  pattern: { value: /^\S+@\S+\.\S+$/, message: 'Invalid email' },
+                  pattern: { value: /^\S+@\S+\.\S+$/, message: t('Invalid email') },
                 })}
               />
               {errors.Email && <p className="text-destructive text-xs">{errors.Email.message}</p>}
@@ -238,11 +244,13 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
 
             {error && (
               <Alert variant="destructive">
-                <AlertTitle>Failed to save user</AlertTitle>
+                <AlertTitle>{t('Failed to save user')}</AlertTitle>
                 <AlertDescription>
                   {getErrorMessage(error)}
                   {getErrorTraceId(error) && (
-                    <p className="mt-1 text-xs">Support code: {getErrorTraceId(error)}</p>
+                    <p className="mt-1 text-xs">
+                      {t('Support code')}: {getErrorTraceId(error)}
+                    </p>
                   )}
                 </AlertDescription>
               </Alert>
@@ -250,10 +258,10 @@ export function UserEditModal({ opened, user, onClose }: UserEditModalProps) {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+                {t('Cancel')}
               </Button>
               <Button type="submit" disabled={isLoading || !hasChanges}>
-                {isLoading ? 'Saving…' : 'Save'}
+                {isLoading ? t('Saving…') : t('Save')}
               </Button>
             </DialogFooter>
           </div>

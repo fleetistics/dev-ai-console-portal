@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { IconLifebuoy } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,6 +22,7 @@ type SendState = 'idle' | 'sending' | 'sent' | 'failed';
  * nothing is sent until the user presses the button.
  */
 export function ReportProblemButton() {
+  const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
   const [comment, setComment] = useState('');
   const [state, setState] = useState<SendState>('idle');
@@ -44,12 +46,12 @@ export function ReportProblemButton() {
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Report a problem">
+            <Button variant="ghost" size="icon" aria-label={t('Report a problem')}>
               <IconLifebuoy size={20} />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Report a problem</TooltipContent>
+        <TooltipContent>{t('Report a problem')}</TooltipContent>
       </Tooltip>
 
       {/* showCloseButton=false: the footer's own Cancel/Close buttons already cover
@@ -58,34 +60,35 @@ export function ReportProblemButton() {
           the footer Close button in the "sent" state). */}
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Report a problem</DialogTitle>
+          <DialogTitle>{t('Report a problem')}</DialogTitle>
         </DialogHeader>
 
         {state === 'sent' ? (
           <>
             <p className="text-sm">
-              Thank you! The report and diagnostic log were sent to our team.
+              {t('Thank you! The report and diagnostic log were sent to our team.')}
             </p>
             <DialogFooter>
-              <Button onClick={() => handleOpenChange(false)}>Close</Button>
+              <Button onClick={() => handleOpenChange(false)}>{t('Close')}</Button>
             </DialogFooter>
           </>
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              Describe what went wrong. Diagnostic data from this browser (application logs for up
-              to the last 7 days) will be attached to help us investigate.
+              {t(
+                'Describe what went wrong. Diagnostic data from this browser (application logs for up to the last 7 days) will be attached to help us investigate.'
+              )}
             </p>
             <Textarea
               value={comment}
               onChange={(event) => setComment(event.currentTarget.value)}
-              placeholder="What were you doing when the problem occurred?"
+              placeholder={t('What were you doing when the problem occurred?')}
               rows={4}
               autoFocus
             />
             {state === 'failed' && (
               <p className="text-sm text-destructive">
-                Sending failed. Please check your connection and try again.
+                {t('Sending failed. Please check your connection and try again.')}
               </p>
             )}
             <DialogFooter>
@@ -94,10 +97,10 @@ export function ReportProblemButton() {
                 onClick={() => handleOpenChange(false)}
                 disabled={state === 'sending'}
               >
-                Cancel
+                {t('Cancel')}
               </Button>
               <Button onClick={handleSend} disabled={state === 'sending'}>
-                {state === 'sending' ? 'Sending…' : 'Send report'}
+                {state === 'sending' ? t('Sending…') : t('Send report')}
               </Button>
             </DialogFooter>
           </>

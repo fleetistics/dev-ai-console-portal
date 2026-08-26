@@ -1,8 +1,14 @@
 import { installApiMock, jsonResponse, renderApp, screen, userEvent, waitFor } from '@test-utils';
+import i18next from 'i18next';
 import { AuthToken } from '@/app.Commons/dataLayer/apiSlice';
 import { UserSessionProvider } from './userSessionProvider';
 
-const session = { accessToken: 'eyJtest.token.value', userId: 7, sessionId: 42 };
+const session = {
+  accessToken: 'eyJtest.token.value',
+  userId: 7,
+  sessionId: 42,
+  preferredLanguage: null,
+};
 
 beforeAll(() => {
   vi.stubEnv('VITE_BASE_URL', 'http://api.test');
@@ -11,6 +17,8 @@ beforeAll(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   AuthToken.clear();
+  localStorage.clear();
+  void i18next.changeLanguage('en');
 });
 
 afterAll(() => {
@@ -29,6 +37,39 @@ describe('UserSessionProvider', () => {
 
     expect(await screen.findByText('app content')).toBeInTheDocument();
     expect(AuthToken.jwtToken).toBe(session.accessToken);
+  });
+
+  it('syncs the language from the server, overriding whatever localStorage had', async () => {
+    localStorage.setItem('language', 'fr');
+    installApiMock({
+      'POST /api/auth/CheckSession': () => jsonResponse({ ...session, preferredLanguage: 'es' }),
+    });
+
+    renderApp(
+      <UserSessionProvider>
+        <div>app content</div>
+      </UserSessionProvider>
+    );
+
+    await screen.findByText('app content');
+    await waitFor(() => {
+      expect(i18next.language).toBe('es');
+    });
+    expect(localStorage.getItem('language')).toBe('es');
+  });
+
+  it('leaves the current language alone when the server has no preference set', async () => {
+    localStorage.setItem('language', 'fr');
+    installApiMock({ 'POST /api/auth/CheckSession': () => jsonResponse(session) });
+
+    renderApp(
+      <UserSessionProvider>
+        <div>app content</div>
+      </UserSessionProvider>
+    );
+
+    await screen.findByText('app content');
+    expect(localStorage.getItem('language')).toBe('fr');
   });
 
   it('shows the login screen on 401 without attempting a token refresh', async () => {

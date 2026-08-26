@@ -1,4 +1,5 @@
 import { Provider as ReduxProvider } from 'react-redux';
+import { useTranslationUpdater } from '@/app.Commons/i18n/translationUpdater';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { store } from './app.Commons/dataLayer/store';
 import { UserSessionProvider } from './app.Commons/userSession/userSessionProvider';
@@ -7,6 +8,8 @@ import { Router } from './Router';
 import './globals.css';
 
 export default function App() {
+  useTranslationUpdater();
+
   return (
     <TooltipProvider>
       <AppErrorBoundary>

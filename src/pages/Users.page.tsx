@@ -16,6 +16,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { useTranslation } from 'react-i18next';
 import { getErrorMessage, getErrorTraceId } from '@/app.Commons/dataLayer/apiError';
 import { useGetUsers } from '@/app.DataLayer/user/userApi';
 import type { User } from '@/app.DataLayer/user/userDto';
@@ -53,6 +54,7 @@ const initials = (name: string) =>
     .join('');
 
 export function UsersPage() {
+  const { t } = useTranslation();
   const { data: users, isLoading, isError, error } = useGetUsers();
   // null = modal closed; { user: null } = "Add user" (empty form); { user } = "Edit user"
   const [editorState, setEditorState] = useState<{ user: User | null } | null>(null);
@@ -71,13 +73,13 @@ export function UsersPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Edit user"
+                aria-label={t('Edit user')}
                 onClick={() => setEditorState({ user: row.original })}
               >
                 <IconPencil size={16} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit user</TooltipContent>
+            <TooltipContent>{t('Edit user')}</TooltipContent>
           </Tooltip>
         ),
       }),
@@ -96,19 +98,19 @@ export function UsersPage() {
           );
         },
       }),
-      columnHelper.accessor('DisplayName', { header: 'Display Name' }),
-      columnHelper.accessor('FullName', { header: 'Full Name' }),
+      columnHelper.accessor('DisplayName', { header: t('Display Name') }),
+      columnHelper.accessor('FullName', { header: t('Full Name') }),
       columnHelper.accessor('Phone', {
-        header: 'Phone',
+        header: t('Phone'),
         cell: ({ getValue }) => {
           const value = getValue();
           const parsed = parsePhoneNumberFromString(value, 'US');
           return parsed?.isValid() ? parsed.formatNational() : value;
         },
       }),
-      columnHelper.accessor('Email', { header: 'Email' }),
+      columnHelper.accessor('Email', { header: t('Email') }),
     ],
-    []
+    [t]
   );
 
   const table = useReactTable({
@@ -130,15 +132,17 @@ export function UsersPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-2 py-2">
-      <h2 className="mb-4 text-2xl font-semibold">Users</h2>
+      <h2 className="mb-4 text-2xl font-semibold">{t('Users')}</h2>
 
       {isError && (
         <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Failed to load users</AlertTitle>
+          <AlertTitle>{t('Failed to load users')}</AlertTitle>
           <AlertDescription>
             {getErrorMessage(error)}
             {getErrorTraceId(error) && (
-              <p className="mt-1 text-xs">Support code: {getErrorTraceId(error)}</p>
+              <p className="mt-1 text-xs">
+                {t('Support code')}: {getErrorTraceId(error)}
+              </p>
             )}
           </AlertDescription>
         </Alert>
@@ -151,7 +155,7 @@ export function UsersPage() {
             className="text-muted-foreground absolute top-1/2 left-2 -translate-y-1/2"
           />
           <Input
-            placeholder="Filter users..."
+            placeholder={t('Filter users...')}
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="pr-8 pl-8"
@@ -159,7 +163,7 @@ export function UsersPage() {
           {globalFilter && (
             <button
               type="button"
-              aria-label="Clear filter"
+              aria-label={t('Clear filter')}
               onClick={() => setGlobalFilter('')}
               className="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2"
             >
@@ -171,7 +175,7 @@ export function UsersPage() {
         <div className="flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Show/hide columns">
+              <Button variant="ghost" size="icon" aria-label={t('Show/hide columns')}>
                 <IconColumns size={16} />
               </Button>
             </DropdownMenuTrigger>
@@ -196,13 +200,13 @@ export function UsersPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Toggle density"
+                aria-label={t('Toggle density')}
                 onClick={() => setDensity((d) => (d === 'compact' ? 'comfortable' : 'compact'))}
               >
                 <IconArrowsVertical size={16} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Toggle density</TooltipContent>
+            <TooltipContent>{t('Toggle density')}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -210,13 +214,13 @@ export function UsersPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Add user"
+                aria-label={t('Add user')}
                 onClick={() => setEditorState({ user: null })}
               >
                 <IconUserPlus size={18} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add user</TooltipContent>
+            <TooltipContent>{t('Add user')}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -261,7 +265,7 @@ export function UsersPage() {
                   colSpan={visibleColumnCount}
                   className="text-muted-foreground text-center"
                 >
-                  No users found.
+                  {t('No users found.')}
                 </TableCell>
               </TableRow>
             ) : (

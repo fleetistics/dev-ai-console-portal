@@ -14,7 +14,7 @@ describe('Router', () => {
   });
 
   it('renders the home page at /', async () => {
-    installApiMock({});
+    installApiMock({ 'GET /api/languages': () => jsonResponse([]) });
     const router = createMemoryRouter(routes, { initialEntries: ['/'] });
 
     renderApp(<RouterProvider router={router} />);
@@ -23,7 +23,10 @@ describe('Router', () => {
   });
 
   it('lazily loads and renders the Users route on navigation', async () => {
-    installApiMock({ 'GET /api/users': () => jsonResponse([]) });
+    installApiMock({
+      'GET /api/users': () => jsonResponse([]),
+      'GET /api/languages': () => jsonResponse([]),
+    });
     const router = createMemoryRouter(routes, { initialEntries: ['/users'] });
 
     renderApp(<RouterProvider router={router} />);

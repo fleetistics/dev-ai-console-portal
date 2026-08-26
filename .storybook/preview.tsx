@@ -1,7 +1,21 @@
 import { useEffect } from 'react';
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import { useGlobals } from 'storybook/preview-api';
 import { TooltipProvider } from '../src/components/ui/tooltip';
 import '../src/globals.css';
+
+// Same synchronous, network-free, backend-less init as vitest.setup.mjs: Storybook
+// never runs main.tsx's real initI18n(), so without this, useTranslation() has no
+// initialized instance to read from — react-i18next's default `useSuspense: true`
+// then suspends indefinitely, which breaks components nested under other context
+// providers (e.g. ReportProblemButton's Tooltip) that don't expect to be suspended.
+void i18next.use(initReactI18next).init({
+  lng: 'en',
+  fallbackLng: 'en',
+  resources: { en: { translation: {} } },
+  interpolation: { escapeValue: false },
+});
 
 export const parameters = {
   layout: 'fullscreen',

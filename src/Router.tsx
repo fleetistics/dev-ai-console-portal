@@ -23,6 +23,13 @@ export const routes: RouteObject[] = [
         // chunk (and any future ones) is fetched.
         lazy: () => import('./pages/Users.page').then((m) => ({ Component: m.UsersPage })),
       },
+      {
+        path: '/translations',
+        lazy: () =>
+          import('./pages/TranslationsAdmin.page').then((m) => ({
+            Component: m.TranslationsAdminPage,
+          })),
+      },
     ],
   },
 ];

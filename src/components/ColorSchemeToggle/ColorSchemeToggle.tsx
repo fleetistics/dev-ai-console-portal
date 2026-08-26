@@ -1,4 +1,5 @@
 import { IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useColorScheme } from '@/app.Commons/theme/useColorScheme';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,13 +17,14 @@ const SCHEME_ICONS = {
 } as const;
 
 export function ColorSchemeToggle() {
+  const { t } = useTranslation();
   const { colorScheme, setColorScheme } = useColorScheme();
   const Icon = SCHEME_ICONS[colorScheme];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Toggle color scheme">
+        <Button variant="ghost" size="icon" aria-label={t('Toggle color scheme')}>
           <Icon size={18} />
         </Button>
       </DropdownMenuTrigger>
@@ -33,15 +35,15 @@ export function ColorSchemeToggle() {
         >
           <DropdownMenuRadioItem value="light">
             <IconSun size={16} />
-            Light
+            {t('Light')}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark">
             <IconMoon size={16} />
-            Dark
+            {t('Dark')}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="auto">
             <IconDeviceDesktop size={16} />
-            Auto
+            {t('Auto')}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

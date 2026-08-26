@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { IconHome2, IconMenu2, IconUsers } from '@tabler/icons-react';
+import { IconHome2, IconLanguage, IconMenu2, IconUsers } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigation } from 'react-router';
 import { AppConfig } from '@/app.Impl/configs/AppConfig';
 import { ReportProblemButton } from '@/app.Impl/flightRecorder/ReportProblemButton';
 import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -15,9 +17,12 @@ import { cn } from '@/lib/utils';
 const NAV_LINKS = [
   { to: '/', label: 'Home', icon: IconHome2 },
   { to: '/users', label: 'Users', icon: IconUsers },
+  { to: '/translations', label: 'Translations', icon: IconLanguage },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <nav className="flex flex-col gap-1 p-4">
       {NAV_LINKS.map(({ to, label, icon: Icon }) => (
@@ -36,7 +41,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           }
         >
           <Icon size={18} />
-          <span>{label}</span>
+          <span>{t(label)}</span>
         </NavLink>
       ))}
     </nav>
@@ -44,6 +49,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function BasePageLayout() {
+  const { t } = useTranslation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // Lazy routes (see Router.tsx) fetch their chunk before rendering, so this
   // covers both that fetch and any route loader — a blank click otherwise.
@@ -60,19 +66,20 @@ export function BasePageLayout() {
                   variant="ghost"
                   size="icon"
                   className="sm:hidden"
-                  aria-label="Open navigation"
+                  aria-label={t('Open navigation')}
                 >
                   <IconMenu2 size={20} />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
-                <SheetTitle className="sr-only">Navigation</SheetTitle>
+                <SheetTitle className="sr-only">{t('Navigation')}</SheetTitle>
                 <NavLinks onNavigate={() => setMobileNavOpen(false)} />
               </SheetContent>
             </Sheet>
-            <span className="font-bold text-primary">{AppConfig.APP_NAME || 'Console'}</span>
+            <span className="font-bold text-primary">{AppConfig.APP_NAME || t('Console')}</span>
           </div>
           <div className="flex items-center gap-1">
+            <LanguageSwitcher />
             <ColorSchemeToggle />
             <ReportProblemButton />
           </div>

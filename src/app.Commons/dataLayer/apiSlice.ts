@@ -175,6 +175,6 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithRetry,
   // Every tag type must be declared here — injectEndpoints() cannot add new ones later.
-  tagTypes: ['User'],
+  tagTypes: ['User', 'Language', 'TranslationToken'],
   endpoints: () => ({}),
 });

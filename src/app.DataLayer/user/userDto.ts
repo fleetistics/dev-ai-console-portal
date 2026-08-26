@@ -23,7 +23,16 @@ export type NewUser = Concrete<
 // server's Optional<T> schema transformer faithfully encodes each field's real
 // nullability (see UserPatchDto.cs / OptionalPropertySchemaTransformer.cs), so
 // the generated type is already accurate.
+//
+// PreferredLanguage is intersected in by hand, not added to the Pick<> list: it was
+// added to UserPatchDto.cs after apiSchema.d.ts was generated, and regenerating needs
+// a running API instance — this machine's local_configs points that at a real remote
+// database (see reference_dev_ai_console_api_local_config_hazard memory), so it's
+// deferred. Once safely regenerated, move PreferredLanguage into the Pick<> list above
+// and drop this intersection.
 export type UserPatch = Pick<
   components['schemas']['UserPatchDto'],
   'DisplayName' | 'FullName' | 'Phone' | 'Email' | 'AvatarImageId'
->;
+> & {
+  PreferredLanguage?: string | null;
+};
